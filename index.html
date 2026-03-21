@@ -2057,7 +2057,7 @@ Return ONLY valid JSON with these fields (use null if not mentioned):
   "dietary": array of strings from: ["Nut-free","Vegetarian","Gluten-free","Dairy-free"] or []
 }`;
 
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
+      const r = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
