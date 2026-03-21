@@ -1480,7 +1480,7 @@ function cheapS(ing){return ST.slice().sort((a,b)=>iP(ing,a)-iP(ing,b))[0];}
 function savings(plan){const t=ST.map(s=>gT(plan,s));return Math.max(...t)-Math.min(...t);}
 
 async function callAI(prompt){
-  const r=await fetch('https://api.anthropic.com/v1/messages',{
+  const r=await fetch('/api/generate',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:6000,messages:[{role:'user',content:prompt}]})
