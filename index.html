@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Okiyo — Smarter Shopping for Australian Families</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Clean white palette ── */
+  :root {
+    --bg:        #f7f8fa;
+    --bg2:       #eef0f3;
+    --surface:   #ffffff;
+    --border:    #e2e5ea;
+    --green-dark:#1a6b3a;
+    --green-mid: #1a8a3c;
+    --green-soft:#4caf72;
+    --green-pale:#c8ecd4;
+    --text:      #111827;
+    --text-mid:  #4b5563;
+    --text-light:#9ca3af;
+    --shadow:    rgba(0,0,0,0.07);
+  }
+
+  body { background: var(--bg); font-family: 'Source Sans 3', sans-serif; min-height: 100vh; }
+
+  header { background: #111827; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .logo-title { font-family: 'Playfair Display', serif; font-size: 22px; color: #fff; font-weight: 900; }
+  .logo-sub { font-size: 10px; color: #9ca3af; letter-spacing: 2px; text-transform: uppercase; }
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 4px; color: #fff; font-weight: 700; }
+
+  .container { max-width: 880px; margin: 0 auto; padding: 28px 16px; }
+
+  .tabs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .tab-row { display: flex; gap: 8px; }
+  .tab { flex: 1; padding: 14px 10px; border: 2px solid var(--border); background: var(--surface); border-radius: 16px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-light); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; box-shadow: 0 2px 8px var(--shadow); }
+  .tab.active { background: #111827; color: #fff; border-color: #111827; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+  .tab-dinner-btn { font-size: 16px; padding: 18px 10px; letter-spacing: 0.3px; }
+  .tab:not(.active):hover { background: var(--bg2); color: var(--text); }
+
+  .card { background: var(--surface); border-radius: 16px; padding: 26px; box-shadow: 0 2px 20px var(--shadow); margin-bottom: 14px; border: 1px solid var(--border); }
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  @media(max-width:500px){ .field-grid { grid-template-columns: 1fr; } }
+  .field-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); display: block; margin-bottom: 10px; }
+  .budget-wrap { display: flex; align-items: center; gap: 6px; }
+  .budget-sign { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: #111827; }
+  .budget-input { font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 900; color: var(--text); border: none; border-bottom: 3px solid #111827; outline: none; width: 130px; background: transparent; padding: 4px 0; }
+  .budget-hint { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+  .counter-wrap { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+  .counter-btn { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #111827; background: transparent; font-size: 22px; cursor: pointer; color: #111827; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: all 0.15s; }
+  .counter-btn:hover { background: #111827; color: #fff; }
+
+  /* Voice button */
+  .voice-wrap { background: linear-gradient(135deg,#1a6b3a,#40916c); border-radius: 20px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: none; width: 100%; text-align: left; transition: opacity 0.2s; box-shadow: 0 2px 10px rgba(26,107,58,0.2); }
+  .voice-wrap:hover { opacity: 0.92; }
+  .voice-btn-icon { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; transition: all 0.2s; }
+  .voice-btn-icon.listening { background: #fff; animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(255,255,255,0.4); } 50%{ transform:scale(1.08); box-shadow:0 0 0 10px rgba(255,255,255,0); } }
+  .voice-btn-text { flex: 1; }
+  .voice-btn-title { font-family: 'Source Sans 3', sans-serif; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+  .voice-btn-sub { font-size: 11px; color: rgba(255,255,255,0.75); line-height: 1.4; }
+  .voice-status { font-size: 13px; color: #fff; font-weight: 600; background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 20px; flex-shrink: 0; display: none; }
+  .voice-status.show { display: block; }
+  .counter-val { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 900; min-width: 44px; text-align: center; color: var(--text); }
+  .days-wrap { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .day-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); color: var(--text-mid); font-family: 'Source Sans 3', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; padding: 0; }
+  .day-btn.active { background: #111827; color: #fff; border-color: #111827; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .day-btn:not(.active):hover { background: var(--bg2); border-color: #aaa; }
+  .pill-btn { padding: 5px 11px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--text-mid); font-size: 12px; cursor: pointer; transition: all 0.15s; margin: 0 4px 4px 0; display: inline-block; }
+  .pill-btn.active { background: #111827; color: #fff; border-color: #111827; }
+  .pill-btn:not(.active):hover { background: var(--bg2); }
+  .go-btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 17px; font-family: 'Playfair Display', serif; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 4px; }
+  .go-btn:hover { opacity: 0.88; }
+  .error-box { background: #fff0f0; border: 1px solid #ffcccc; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; color: #cc0000; font-size: 14px; }
+
+  .section-title { font-family: 'Playfair Display', serif; font-size: 36px; color: var(--text); font-weight: 900; line-height: 1.1; margin-bottom: 8px; text-align: center; }
+  .section-sub { color: var(--text-mid); font-size: 15px; font-weight: 300; text-align: center; margin-bottom: 28px; line-height: 1.5; }
+
+  .loading-wrap { text-align: center; padding: 80px 0; }
+  .loading-icon { font-size: 56px; display: inline-block; animation: spin 1.2s linear infinite; margin-bottom: 18px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .store-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  @media(max-width:600px){ .store-grid { grid-template-columns: 1fr 1fr; } }
+  .store-card { border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; border: 2px solid var(--border); background: var(--surface); }
+  .store-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px var(--shadow); }
+  .store-card-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); margin-bottom: 4px; }
+  .store-card-total { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: var(--text); }
+  .cheapest-tag { font-size: 11px; font-weight: 700; margin-top: 4px; }
+  .savings-card { background: #111827; border-radius: 12px; padding: 14px 16px; }
+
+  .meal-card { background: var(--surface); border-radius: 14px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 2px 12px var(--shadow); border: 2px solid transparent; transition: border-color 0.2s; }
+  .meal-header { display: flex; align-items: center; padding: 12px 14px; gap: 10px; cursor: pointer; }
+  .meal-header:hover { background: var(--bg); }
+  .meal-emoji { font-size: 26px; flex-shrink: 0; }
+  .meal-meta { font-size: 10px; color: var(--text-light); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+  .meal-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--text); }
+  .mini-prices { display: flex; gap: 5px; justify-content: flex-end; margin-bottom: 5px; flex-wrap: wrap; }
+  .mini-price { font-size: 10px; padding: 2px 5px; border-radius: 4px; background: var(--bg2); color: var(--text-mid); font-weight: 700; white-space: nowrap; }
+  .meal-total-price { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; }
+  .meal-toggle { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+  .ing-table { border-top: 1px solid var(--border); overflow: hidden; }
+  .ing-grid { display: grid; grid-template-columns: minmax(0,1fr) 58px 58px 58px; padding: 8px 10px; gap: 4px; }
+  @media(max-width:380px){ .ing-grid { grid-template-columns: minmax(0,1fr) 50px 50px 50px; padding: 6px 8px; } }
+  .ing-col-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 1.5px; }
+  .ing-col-store { font-size: 10px; font-weight: 700; text-align: right; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ing-data-row { border-top: 1px solid var(--bg2); }
+  .ing-data-row:nth-child(even) { background: var(--bg); }
+  .ing-name-cell { font-size: 12px; color: var(--text); }
+  .ing-qty-cell { font-size: 11px; color: var(--text-light); margin-left: 5px; }
+  .ing-price-cell { text-align: right; font-size: 12px; color: var(--text-mid); display: block; white-space: nowrap; overflow: hidden; }
+  .ing-price-cell.cheapest { font-weight: 700; }
+  .totals-grid { padding: 12px 18px; background: var(--bg2); border-top: 2px solid var(--border); }
+  .totals-label { font-size: 13px; font-weight: 700; color: var(--text); }
+  .totals-price { text-align: right; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 900; color: var(--text-mid); white-space: nowrap; }
+  .cheapest-note { font-size: 9px; font-weight: 700; display: block; }
+
+  .grand-box { border-radius: 14px; padding: 22px 24px; margin-top: 10px; }
+  .grand-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #fff; font-weight: 700; margin-bottom: 4px; }
+  .grand-sub { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+  .grand-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media(max-width:480px){ .grand-grid { grid-template-columns: 1fr; } }
+  .grand-store { border-radius: 10px; padding: 14px 16px; background: rgba(255,255,255,0.12); }
+  .grand-store-name { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+  .grand-store-total { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #fff; }
+  .grand-store-note { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+  .kids-banner { background: linear-gradient(135deg,#ff8c00,#ffb347); border-radius: 14px; padding: 18px 22px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  .reset-btn { width: 100%; padding: 14px; background: transparent; color: #e8192c; border: 1px solid #fca5a5; border-radius: 10px; font-size: 14px; cursor: pointer; margin-top: 14px; font-weight: 600; }
+  .reset-btn:hover { background: #fff5f5; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  .fade-up { animation: fadeUp 0.35s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ SPLASH / DISCLAIMER SCREEN ══════════ -->
+<div id="splashScreen" style="position:fixed;inset:0;background:#111827;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto;">
+  <div style="max-width:420px;width:100%;text-align:center;">
+
+    <!-- Logo -->
+    <div style="font-size:52px;margin-bottom:12px;">🌿</div>
+    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#fff;margin-bottom:4px;">Okiyo</div>
+    <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:32px;">Smarter Shopping for Australian Families</div>
+
+    <!-- Disclaimer card -->
+    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:24px 20px;margin-bottom:24px;text-align:left;">
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px;text-align:center;letter-spacing:0.5px;">📋 Before you start — please note</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="font-size:18px;flex-shrink:0;">📊</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e5e7eb;margin-bottom:2px;">Prices are estimates</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Based on current Australian inflation trends (March 2026). Actual prices vary by location, date and promotions. Always verify in-store before purchasing.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="font-size:18px;flex-shrink:0;">🏪</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e5e7eb;margin-bottom:2px;">Independent app</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Okiyo is not affiliated with, endorsed by or connected to Woolworths®, Coles® or ALDI®. All trademarks belong to their respective owners.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="font-size:18px;flex-shrink:0;">🍽️</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e5e7eb;margin-bottom:2px;">Budgeting guidance only</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Meal plans and shopping lists are for budgeting purposes only. Not financial, medical or dietary advice. Consult a health professional for specific dietary needs.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="font-size:18px;flex-shrink:0;">🔒</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e5e7eb;margin-bottom:2px;">Your privacy</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">No personal data is collected, stored or shared. Your details stay on your device only.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agree button -->
+    <button onclick="dismissSplash()" style="width:100%;padding:18px;background:linear-gradient(135deg,#1a6b3a,#40916c);color:#fff;border:none;border-radius:16px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(26,107,58,0.4);margin-bottom:12px;">
+      🌿 Got it, let's go! →
+    </button>
+    <div style="font-size:10px;color:rgba(255,255,255,0.3);line-height:1.6;">
+      By continuing you acknowledge you have read and understood the above. Full terms available at the bottom of the app.
+    </div>
+
+  </div>
+</div>
+
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span style="font-size:32px">🌿</span>
+    <div>
+      <div class="logo-title" style="font-size:26px;letter-spacing:-0.5px">Okiyo</div>
+      <div class="logo-sub">Smarter Shopping for Australian Families</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="badge" style="background:#1a6b3a">Woolworths</span>
+    <span class="badge" style="background:#e8192c">Coles</span>
+    <span class="badge" style="background:#0052a5">ALDI</span>
+    <!-- GLOBAL SMART VOICE BUTTON -->
+    <button onclick="startGlobalVoice()" id="globalVoiceBtn"
+      style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;color:#fff;font-size:12px;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;">
+      <span id="globalVoiceIcon" style="font-size:16px;">🎤</span>
+      <span id="globalVoiceLabel">Speak your meal plan & shopping list</span>
+    </button>
+  </div>
+</header>
+
+<!-- SMART VOICE RESULT MODAL -->
+<div id="smartVoiceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:flex-end;justify-content:center;" onclick="closeSmartVoiceModal(event)">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:880px;padding:24px 20px 36px;" onclick="event.stopPropagation()">
+    <div style="width:40px;height:4px;background:#e2e5ea;border-radius:2px;margin:0 auto 16px;"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;">🎤 Okiyo heard you!</div>
+    <div style="font-size:13px;color:var(--text-light);margin-bottom:16px;" id="smartVoiceTranscript"></div>
+
+    <!-- What Okiyo understood -->
+    <div id="smartVoiceActions" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button onclick="applySmartVoice()" style="padding:14px;background:#1a6b3a;color:#fff;border:none;border-radius:12px;font-size:15px;font-family:'Playfair Display',serif;font-weight:700;cursor:pointer;">
+        ✅ Yes, apply it all!
+      </button>
+      <button onclick="closeSmartVoiceModal()" style="padding:14px;background:transparent;color:#888;border:1px solid #ddd;border-radius:12px;font-size:14px;cursor:pointer;">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="tabs">
+    <!-- Family Dinners — full width prominent button -->
+    <button class="tab tab-dinner-btn active" id="tab-dinner" onclick="switchTab('dinner')">
+      🍽️ Family Dinners
+    </button>
+    <!-- Shopping List + Kids School Lunch — side by side below -->
+    <div class="tab-row">
+      <button class="tab" id="tab-shop" onclick="switchTab('shop')">
+        🛒 Shopping List
+      </button>
+      <button class="tab" id="tab-kids" onclick="switchTab('kids')">
+        🎒 Kids School Lunch
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════ DINNER SECTION ══════════ -->
+  <div id="section-dinner">
+
+    <div id="d-setup" class="fade-up">
+      <h1 class="section-title">What's for dinner<br>this week?</h1>
+      <p class="section-sub">Enter your budget — Okiyo shows you exactly what each meal costs,<br>ingredient by ingredient, at Coles, Woolworths and ALDI.</p>
+
+      <!-- MODE SWITCHER -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+        <button id="modeABtn" onclick="switchToMode('surprise')" style="padding:12px;border-radius:20px;border:2px solid #7c3aed;background:#7c3aed;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;">
+          <div style="font-size:22px;margin-bottom:4px">✨</div>
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">Surprise Me</div>
+          <div style="font-size:11px;opacity:0.75;margin-top:2px;">We pick meals that fit your budget</div>
+        </button>
+        <button id="modeBBtn" onclick="switchToMode('choose')" style="padding:12px;border-radius:20px;border:2px solid #e2e5ea;background:#fff;color:#111827;cursor:pointer;text-align:left;transition:all 0.2s;">
+          <div style="font-size:22px;margin-bottom:4px">👨‍🍳</div>
+          <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;">I'll Choose</div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Pick your meals, we cost them up</div>
+        </button>
+      </div>
+
+      <!-- VOICE BUTTON -->
+      <button class="voice-wrap" onclick="startGlobalVoice()" id="dVoiceBtn">
+        <div class="voice-btn-icon" id="dVoiceIcon">🎤</div>
+        <div class="voice-btn-text">
+          <div class="voice-btn-title">Tap to speak your request</div>
+          <div class="voice-btn-sub" id="dVoiceSub">Try: "7 nights, budget $200, family of 4 — and add milk to shopping"</div>
+        </div>
+        <div class="voice-status" id="dVoiceStatus">Listening...</div>
+      </button>
+
+      <!-- SHARED FIELDS — budget, people, dietary only -->
+      <div class="card">
+        <div class="field-grid">
+          <div>
+            <label class="field-label">Weekly Dinner Budget</label>
+            <div class="budget-wrap">
+              <span class="budget-sign" style="color:#1a8a3c">$</span>
+              <input class="budget-input" id="dBudget" type="number" value="200" oninput="dHint()">
+              <span style="font-size:14px;color:#aaa;margin-left:4px">AUD</span>
+            </div>
+            <div class="budget-hint" id="dHintTxt">≈ $7.14 per person per meal</div>
+          </div>
+          <div>
+            <label class="field-label">People to Feed</label>
+            <div class="counter-wrap">
+              <button class="counter-btn" onclick="dPeopleChange(-1)">−</button>
+              <span class="counter-val" id="dPeopleVal">4</span>
+              <button class="counter-btn" onclick="dPeopleChange(1)">+</button>
+              <span style="font-size:14px;color:#aaa">people</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE A: SURPRISE ME -->
+      <div id="modeA-panel">
+        <!-- Dietary Needs — Surprise Me only -->
+        <div class="card" style="margin-bottom:14px;">
+          <label class="field-label">Dietary Needs <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+          <div id="dDietContainer">
+            <button class="pill-btn" onclick="this.classList.toggle('active')">Vegetarian</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">Gluten-free</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">Halal</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">Dairy-free</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">No seafood</button>
+          </div>
+        </div>
+        <!-- Nights selector — Surprise Me only -->
+        <div class="card" style="margin-bottom:14px;">
+          <div style="margin-bottom:14px">
+            <label class="field-label">Number of Dinners</label>
+            <div class="days-wrap" style="flex-wrap:wrap;">
+              <button class="day-btn" id="dd1" onclick="dSetDays(1)">1</button>
+              <button class="day-btn" id="dd2" onclick="dSetDays(2)">2</button>
+              <button class="day-btn" id="dd3" onclick="dSetDays(3)">3</button>
+              <button class="day-btn" id="dd4" onclick="dSetDays(4)">4</button>
+              <button class="day-btn" id="dd5" onclick="dSetDays(5)">5</button>
+              <button class="day-btn" id="dd6" onclick="dSetDays(6)">6</button>
+              <button class="day-btn active" id="dd7" onclick="dSetDays(7)">7</button>
+            </div>
+            <div style="font-size:11px;color:var(--text-light);margin-top:6px;" id="dNightsHint">7 nights — full week</div>
+          </div>
+
+        </div>
+        <div id="dErr" class="error-box" style="display:none"></div>
+        <button class="go-btn" style="background:#7c3aed;color:#fff" onclick="genDinner()">✨ Show me the cost for selected dinners →</button>
+        <button onclick="clearDinnerSetup()" style="width:100%;margin-top:8px;padding:10px;background:transparent;color:#e8192c;border:1px dashed #fca5a5;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600;">🔄 Clear all selections</button>
+      </div>
+
+      <!-- MODE B: I'LL CHOOSE — meal picker -->
+      <div id="modeB-panel" style="display:none">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;">Build your week</div>
+        <p style="font-size:13px;color:var(--text-mid);margin-bottom:14px;">Tap a day to pick what you want to cook. Leave any day blank and we'll fill it in for you.</p>
+
+        <!-- Day slots — tap a day to pick its meal -->
+        <div id="daySlots" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;"></div>
+
+        <!-- Meal picker — shows when a day is selected -->
+        <div id="mealPicker" style="display:none;background:#fff;border:2px solid #1a6b3a;border-radius:14px;padding:18px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1a6b3a;" id="pickerDayLabel">Choose meal for Monday</div>
+              <div style="font-size:12px;color:var(--text-light);margin-top:2px;">Tap a meal to assign it · tap again to deselect</div>
+            </div>
+            <button onclick="closeMealPicker()" style="padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#888;font-size:12px;cursor:pointer;">✕ Close</button>
+          </div>
+
+          <!-- Search bar -->
+          <div style="position:relative;margin-bottom:12px;">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;">🔍</span>
+            <input id="mealSearchInput" type="text" placeholder="Search meals e.g. pasta, chicken, curry..." oninput="searchMeals(this.value)"
+              style="width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:'Source Sans 3',sans-serif;outline:none;box-sizing:border-box;transition:border 0.15s;"
+              onfocus="this.style.borderColor='#1a6b3a'" onblur="this.style.borderColor='var(--border)'">
+            <span id="searchClear" onclick="clearSearch()" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:14px;">✕</span>
+          </div>
+
+          <!-- Result count -->
+          <div id="mealResultCount" style="font-size:11px;color:var(--text-light);margin-bottom:10px;"></div>
+
+          <!-- Categories -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;overflow-x:auto;padding-bottom:4px;" id="mealCatBtns">
+            <button class="pill-btn active" onclick="filterMeals('all',this)">All</button>
+            <button class="pill-btn" onclick="filterMeals('pasta',this)">🍝 Pasta</button>
+            <button class="pill-btn" onclick="filterMeals('chicken',this)">🍗 Chicken</button>
+            <button class="pill-btn" onclick="filterMeals('beef',this)">🥩 Beef</button>
+            <button class="pill-btn" onclick="filterMeals('fish',this)">🐟 Fish</button>
+            <button class="pill-btn" onclick="filterMeals('veg',this)">🥦 Veggie</button>
+            <button class="pill-btn" onclick="filterMeals('asian',this)">🍜 Asian</button>
+            <button class="pill-btn" onclick="filterMeals('mexican',this)">🌮 Mexican</button>
+            <button class="pill-btn" onclick="filterMeals('soup',this)">🍲 Soups</button>
+            <button class="pill-btn" onclick="filterMeals('bake',this)">🫕 Bakes</button>
+            <button class="pill-btn" onclick="filterMeals('lamb',this)">🐑 Lamb</button>
+            <button class="pill-btn" onclick="filterMeals('pork',this)">🥓 Pork</button>
+            <button class="pill-btn" onclick="filterMeals('quick',this)">⚡ Quick</button>
+          </div>
+
+          <div id="mealLibrary" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-height:320px;overflow-y:auto;padding-right:4px;"></div>
+        </div>
+
+        <!-- Summary of selections -->
+        <div id="selectedSummary" style="background:var(--bg2);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:none;">
+          <div style="font-size:12px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Your Week So Far</div>
+          <div id="selectedList"></div>
+        </div>
+
+        <div id="dErrB" class="error-box" style="display:none"></div>
+        <button class="go-btn" style="background:#1a6b3a;color:#fff" onclick="genChosenMeals()">🌿 Show me the cost for selected dinners →</button>
+      </div>
+    </div>
+
+    <div id="d-loading" style="display:none">
+      <div class="loading-wrap">
+        <div class="loading-icon">🍽️</div>
+        <div style="font-family:'Playfair Display',serif;font-size:26px;color:var(--text);margin-bottom:8px">Finding your dinners...</div>
+        <div style="color:var(--text-mid);font-weight:300" id="dLoadTxt"></div>
+      </div>
+    </div>
+
+    <div id="d-results" style="display:none" class="fade-up">
+
+      <!-- Budget summary banner -->
+      <div id="dBudgetBanner" style="background:linear-gradient(135deg,#f0faf4,#e8f5e9);border:1.5px solid #c8e6c9;border-radius:14px;padding:12px 16px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#388e3c;letter-spacing:1px;text-transform:uppercase;">Your Budget</div>
+            <div style="font-size:22px;font-weight:900;color:#1a6b3a;font-family:'Playfair Display',serif;" id="dBudgetDisplay">$200</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;font-weight:700;color:#388e3c;letter-spacing:1px;text-transform:uppercase;">Plan</div>
+            <div style="font-size:13px;font-weight:700;color:#1a6b3a;" id="dPlanDisplay">7 nights · 4 people</div>
+          </div>
+        </div>
+        <div id="dSavingsMsg" style="display:none;font-size:13px;color:#1a6b3a;padding-top:8px;border-top:1px solid #c8e6c9;line-height:1.5;"></div>
+      </div>
+
+      <!-- Quick mode switcher on results -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <button onclick="switchToMode('surprise')" id="rModeABtn" style="padding:10px 14px;border-radius:10px;border:2px solid #7c3aed;background:#7c3aed;color:#fff;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
+          ✨ Surprise Me
+        </button>
+        <button onclick="switchToMode('choose')" id="rModeBBtn" style="padding:10px 14px;border-radius:10px;border:2px solid #e2e5ea;background:#fff;color:#555;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
+          👨‍🍳 I'll Choose
+        </button>
+      </div>
+
+      <div class="store-grid" id="dSGrid"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <span style="font-size:13px;color:#888" id="dFHint">Tap a store above to highlight its prices</span>
+        <span style="font-size:12px;color:#888;font-style:italic;" id="dBNote"></span>
+      </div>
+      <div id="dMealList"></div>
+      <div class="grand-box" style="background:#111827" id="dGrand"></div>
+
+      <!-- Save & Share button -->
+      <button onclick="openShareMenu('dinner')" style="width:100%;margin-top:14px;padding:16px;background:linear-gradient(135deg,#1a6b3a,#40916c);color:#fff;border:none;border-radius:12px;font-size:16px;font-family:'Playfair Display',serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(26,107,58,0.25);">
+        💾 Save &amp; Share My Plan
+      </button>
+      <button class="reset-btn" onclick="dReset()">🔄 Clear & start again</button>
+    </div>
+  </div>
+
+  <!-- ══════════ KIDS SECTION ══════════ -->
+  <!-- ══════════ SHOPPING LIST SECTION ══════════ -->
+  <div id="section-shop" style="display:none">
+
+    <div id="shop-setup" class="fade-up">
+      <h1 class="section-title">🛒 What would you<br>like to add?</h1>
+      <p class="section-sub">Tap items from the list below, speak or type anything.<br>We'll price everything at Coles, Woolworths and ALDI.</p>
+
+      <!-- Voice button -->
+      <button class="voice-wrap" onclick="startGlobalVoice()" id="shopVoiceBtn" style="margin-bottom:14px;">
+        <div class="voice-btn-icon" id="shopVoiceIcon">🎤</div>
+        <div class="voice-btn-text">
+          <div class="voice-btn-title">Tap to speak your list</div>
+          <div class="voice-btn-sub">Try: "Add milk, bread and eggs — also build me 5 nights dinner for $150"</div>
+        </div>
+        <div class="voice-status" id="shopVoiceStatus">Listening...</div>
+      </button>
+
+      <!-- ── QUICK PICK LIBRARY ── -->
+      <div class="card" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <label class="field-label" style="margin-bottom:0;">⚡ Quick Add — tap a category</label>
+          <button onclick="clearQuickPicks()" style="font-size:11px;color:#e8192c;background:transparent;border:none;cursor:pointer;font-weight:600;padding:0;">Clear all</button>
+        </div>
+
+        <!-- Category pills -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0;padding-bottom:2px;" id="shopCatBtns">
+          <button class="pill-btn active" onclick="filterShopCat('all',this)">All</button>
+          <button class="pill-btn" onclick="filterShopCat('dairy',this)">🥛 Dairy</button>
+          <button class="pill-btn" onclick="filterShopCat('bakery',this)">🍞 Bakery</button>
+          <button class="pill-btn" onclick="filterShopCat('meat',this)">🥩 Meat</button>
+          <button class="pill-btn" onclick="filterShopCat('produce',this)">🥦 Fruit & Veg</button>
+          <button class="pill-btn" onclick="filterShopCat('pantry',this)">🧴 Pantry</button>
+          <button class="pill-btn" onclick="filterShopCat('household',this)">🧻 Household</button>
+          <button class="pill-btn" onclick="filterShopCat('personal',this)">🧴 Personal Care</button>
+          <button class="pill-btn" onclick="filterShopCat('drinks',this)">☕ Drinks</button>
+          <button class="pill-btn" onclick="filterShopCat('snacks',this)">🍫 Snacks</button>
+          <button class="pill-btn" onclick="filterShopCat('frozen',this)">🧊 Frozen</button>
+          <button class="pill-btn" onclick="filterShopCat('baby',this)">👶 Baby</button>
+          <button class="pill-btn" onclick="filterShopCat('pets',this)">🐾 Pets</button>
+        </div>
+
+        <!-- Category panel — slides open below pills -->
+        <div id="shopCatPanel" style="margin-top:10px;background:#f7f8fa;border:1.5px solid #e2e5ea;border-radius:12px;padding:14px;min-height:60px;">
+          <div id="shopCatLabel" style="font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;">All Items</div>
+          <div id="shopQuickGrid" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+
+        <!-- Selected count -->
+        <div id="shopPickedSummary" style="display:none;margin-top:10px;padding:8px 12px;background:#f0faf4;border:1px solid #c8e6c9;border-radius:8px;font-size:12px;color:var(--text-mid);">
+          ✅ <span id="shopPickedCount" style="font-weight:700;color:#1a6b3a;"></span> items selected
+        </div>
+      </div>
+
+      <!-- ── TYPE / URL INPUT ── -->
+      <div class="card">
+        <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:2px solid var(--bg2);padding-bottom:12px;">
+          <button id="sMethodA" onclick="setShopMethod('type')" style="flex:1;padding:8px;border:none;background:transparent;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;color:#1a6b3a;border-bottom:2px solid #1a6b3a;margin-bottom:-14px;cursor:pointer;">✏️ Type extra items</button>
+          <button id="sMethodB" onclick="setShopMethod('recipe')" style="flex:1;padding:8px;border:none;background:transparent;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:600;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-14px;cursor:pointer;">🔗 Paste Recipe URL</button>
+        </div>
+
+        <div id="shopTypePanel">
+          <label class="field-label">Add anything else to your list</label>
+          <textarea id="shopTextInput" placeholder="Examples:&#10;• Milk, bread, eggs, butter, cheese&#10;• Garbage bags, shampoo, orange juice&#10;• Any item you can't find above"
+            style="width:100%;height:100px;border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'Source Sans 3',sans-serif;font-size:14px;color:var(--text);outline:none;resize:none;line-height:1.5;transition:border 0.15s;box-sizing:border-box;"
+            onfocus="this.style.borderColor='#1a6b3a'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        </div>
+
+        <div id="shopRecipePanel" style="display:none;">
+          <label class="field-label">Paste a recipe link</label>
+          <input id="shopUrlInput" type="url" placeholder="e.g. https://www.taste.com.au/recipes/..."
+            style="width:100%;border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'Source Sans 3',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border 0.15s;box-sizing:border-box;"
+            onfocus="this.style.borderColor='#1a6b3a'" onblur="this.style.borderColor='var(--border)'">
+          <div style="font-size:11px;color:var(--text-light);margin-top:6px;">Paste any recipe URL — Okiyo extracts the ingredients and costs them up at all 3 stores.</div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <label class="field-label">Budget (optional)</label>
+          <div class="budget-wrap">
+            <span class="budget-sign" style="color:#1a6b3a;font-size:22px;">$</span>
+            <input id="shlBudget" type="number" placeholder="Any"
+              style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--text);border:none;border-bottom:3px solid #111827;outline:none;width:120px;background:transparent;padding:4px 0;">
+            <span style="font-size:14px;color:#aaa;margin-left:8px;">AUD</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="shopErr" class="error-box" style="display:none"></div>
+      <button class="go-btn" style="background:#1a6b3a;color:#fff" onclick="genShoppingList()">🛒 Let's build my shopping list →</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="shop-loading" style="display:none">
+      <div class="loading-wrap">
+        <div class="loading-icon">🛒</div>
+        <div style="font-family:'Playfair Display',serif;font-size:26px;color:var(--text);margin-bottom:8px">Building your list...</div>
+        <div style="color:var(--text-mid);font-weight:300" id="shopLoadTxt">Finding every ingredient and comparing prices</div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="shop-results" style="display:none" class="fade-up">
+
+      <!-- Shopping budget banner -->
+      <div style="background:linear-gradient(135deg,#f0faf4,#e8f5e9);border:1.5px solid #c8e6c9;border-radius:14px;padding:12px 16px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#388e3c;letter-spacing:1px;text-transform:uppercase;">Your Budget</div>
+            <div style="font-size:22px;font-weight:900;color:#1a6b3a;font-family:'Playfair Display',serif;" id="shopBudgetDisplay">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;font-weight:700;color:#388e3c;letter-spacing:1px;text-transform:uppercase;">List</div>
+            <div style="font-size:13px;font-weight:700;color:#1a6b3a;" id="shopPlanDisplay"></div>
+          </div>
+        </div>
+        <div id="shopSavingsMsg" style="display:none;font-size:13px;color:#1a6b3a;padding-top:8px;border-top:1px solid #c8e6c9;line-height:1.5;"></div>
+      </div>
+
+      <!-- What Okiyo understood -->
+      <div id="shopUnderstood" style="background:linear-gradient(135deg,#f0faf4,#e8f5e9);border:1px solid #c8e6c9;border-radius:12px;padding:14px 18px;margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;color:#1a6b3a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">🛒 Shopping list for</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--text);" id="shopListTitle"></div>
+        <div style="font-size:12px;color:var(--text-mid);margin-top:4px;" id="shopListSub"></div>
+      </div>
+
+      <!-- Store totals -->
+      <div class="store-grid" id="shopSGrid"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <span style="font-size:13px;color:#888" id="shopFHint">Tap a store to highlight its prices</span>
+      </div>
+
+      <!-- Ingredient list -->
+      <div id="shopIngList"></div>
+
+      <!-- Grand total -->
+      <div class="grand-box" style="background:#1a6b3a" id="shopGrand"></div>
+
+      <!-- Share list button -->
+      <button onclick="openShareMenu('shop')" style="width:100%;margin-top:14px;padding:16px;background:linear-gradient(135deg,#1a6b3a,#40916c);color:#fff;border:none;border-radius:12px;font-size:16px;font-family:'Playfair Display',serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(26,107,58,0.25);">
+        💾 Save &amp; Share My List
+      </button>
+      <button class="reset-btn" onclick="shopReset()">🔄 Clear & start again</button>
+    </div>
+  </div>
+
+</div>
+
+  <!-- ══════════ KIDS SCHOOL LUNCH SECTION ══════════ -->
+  <div id="section-kids" style="display:none">
+
+    <!-- Setup -->
+    <div id="k-setup" class="fade-up">
+      <h1 class="section-title">🎒 Kids School Lunch</h1>
+      <p class="section-sub">Enter your budget — Okiyo shows you exactly what each lunch and snack costs at Coles, Woolworths and ALDI.</p>
+
+      <div class="card">
+
+        <!-- Budget -->
+        <div style="margin-bottom:22px">
+          <label class="field-label">Weekly Lunch Budget</label>
+          <div style="display:flex;align-items:baseline;gap:8px;">
+            <span style="font-size:28px;font-weight:700;color:#f97316;">$</span>
+            <input type="number" id="kBudget" value="80" min="10" max="500"
+              style="font-size:36px;font-weight:900;color:var(--text);border:none;border-bottom:3px solid #f97316;background:transparent;width:120px;outline:none;font-family:'Playfair Display',serif;"
+              oninput="kHint()">
+            <span style="font-size:16px;color:var(--text-light);font-weight:300;">AUD</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:6px;" id="kHintTxt">≈ $4.00 per child per day</div>
+        </div>
+
+        <!-- Number of kids -->
+        <div style="margin-bottom:22px">
+          <label class="field-label">Number of Kids</label>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <button class="counter-btn" onclick="kKidsChange(-1)">−</button>
+            <span class="counter-val" id="kKidsVal">2</span>
+            <button class="counter-btn" onclick="kKidsChange(1)">+</button>
+            <span style="font-size:14px;color:#aaa">kids</span>
+          </div>
+        </div>
+
+        <!-- Number of days -->
+        <div style="margin-bottom:22px">
+          <label class="field-label">Number of Days</label>
+          <div class="days-wrap">
+            <button class="day-btn" id="kd1" onclick="kSetDays(1)">1</button>
+            <button class="day-btn" id="kd2" onclick="kSetDays(2)">2</button>
+            <button class="day-btn" id="kd3" onclick="kSetDays(3)">3</button>
+            <button class="day-btn" id="kd4" onclick="kSetDays(4)">4</button>
+            <button class="day-btn active" id="kd5" onclick="kSetDays(5)">5</button>
+          </div>
+          <div style="font-size:11px;color:var(--text-light);margin-top:6px;" id="kDaysHint">5 days — full school week</div>
+        </div>
+
+        <!-- Meal types -->
+        <div style="margin-bottom:22px">
+          <label class="field-label">Meal Types</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="pill-btn active" id="kTypeLunch" onclick="kToggleType('lunch',this)">🥪 Lunch</button>
+            <button class="pill-btn active" id="kTypeSnacks" onclick="kToggleType('snacks',this)">🍎 Snacks</button>
+          </div>
+        </div>
+
+        <!-- Dietary needs -->
+        <div style="margin-bottom:8px">
+          <label class="field-label">Dietary Needs <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+          <div id="kDietContainer" style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button class="pill-btn" onclick="this.classList.toggle('active')">🥜 Nut-free</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">🥦 Vegetarian</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">🌾 Gluten-free</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">🥛 Dairy-free</button>
+            <button class="pill-btn" onclick="this.classList.toggle('active')">🐟 No seafood</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="kErr" class="error-box" style="display:none"></div>
+      <button class="go-btn" style="background:#f97316;color:#fff" onclick="genKids()">🎒 Show me the cost for school lunches →</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="k-loading" style="display:none">
+      <div class="loading-wrap">
+        <div class="loading-icon">🎒</div>
+        <div style="font-family:'Playfair Display',serif;font-size:26px;color:var(--text);margin-bottom:8px">Building lunch plan...</div>
+        <div style="color:var(--text-mid);font-weight:300" id="kLoadTxt">Finding the best prices for school lunches</div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="k-results" style="display:none" class="fade-up">
+      <!-- Kids budget banner -->
+      <div style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border:1.5px solid #fed7aa;border-radius:14px;padding:12px 16px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#c2410c;letter-spacing:1px;text-transform:uppercase;">Your Budget</div>
+            <div style="font-size:22px;font-weight:900;color:#ea580c;font-family:'Playfair Display',serif;" id="kBudgetDisplay">$80</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;font-weight:700;color:#c2410c;letter-spacing:1px;text-transform:uppercase;">Plan</div>
+            <div style="font-size:13px;font-weight:700;color:#ea580c;" id="kPlanDisplay">5 days · 2 kids</div>
+          </div>
+        </div>
+        <div id="kSavingsMsg" style="display:none;font-size:13px;color:#9a3412;padding-top:8px;border-top:1px solid #fed7aa;line-height:1.5;"></div>
+      </div>
+
+      <!-- Store comparison -->
+      <div style="font-size:11px;color:var(--text-light);margin-bottom:8px;" id="kFHint">Tap a store to highlight prices</div>
+      <div class="store-grid" id="kSGrid"></div>
+
+      <!-- Meal list -->
+      <div id="kMealList"></div>
+
+      <!-- Grand total -->
+      <div id="kGrand"></div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+        <button onclick="openShareMenu('kids')" style="flex:1;padding:14px;background:#f97316;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Source Sans 3',sans-serif;">💾 Save &amp; Share</button>
+        <button onclick="kReset()" style="padding:14px 18px;background:#fff;color:#e8192c;border:2px solid #fca5a5;border-radius:14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Source Sans 3',sans-serif;">🔄 Start again</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- end section-kids -->
+
+</div>
+<div id="shareModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center;" onclick="closeShareMenu(event)">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:880px;padding:24px 20px 36px;box-shadow:0 -4px 30px rgba(0,0,0,0.15);" onclick="event.stopPropagation()">
+
+    <!-- Handle bar -->
+    <div style="width:40px;height:4px;background:#e2e5ea;border-radius:2px;margin:0 auto 20px;"></div>
+
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;">💾 Save &amp; Share</div>
+    <div style="font-size:13px;color:var(--text-light);margin-bottom:20px;" id="shareSubtitle">Choose how you'd like to save your plan</div>
+
+    <!-- Share options -->
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <!-- Share via phone -->
+      <button onclick="doShare('native')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#f7f8fa;border:1px solid #e2e5ea;border-radius:12px;cursor:pointer;width:100%;text-align:left;transition:background 0.15s;" onmouseover="this.style.background='#eef0f3'" onmouseout="this.style.background='#f7f8fa'">
+        <span style="font-size:28px;flex-shrink:0;">📤</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);font-family:'Source Sans 3',sans-serif;">Share</div>
+          <div style="font-size:12px;color:var(--text-light);">Send via WhatsApp, Messages, Email, AirDrop and more</div>
+        </div>
+        <span style="margin-left:auto;color:#aaa;font-size:18px;">›</span>
+      </button>
+
+      <!-- Copy to clipboard -->
+      <button onclick="doShare('clipboard')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#f7f8fa;border:1px solid #e2e5ea;border-radius:12px;cursor:pointer;width:100%;text-align:left;transition:background 0.15s;" onmouseover="this.style.background='#eef0f3'" onmouseout="this.style.background='#f7f8fa'">
+        <span style="font-size:28px;flex-shrink:0;">📋</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);font-family:'Source Sans 3',sans-serif;">Copy to Clipboard</div>
+          <div style="font-size:12px;color:var(--text-light);">Paste into Notes, WhatsApp, or anywhere you like</div>
+        </div>
+        <span style="margin-left:auto;color:#aaa;font-size:18px;">›</span>
+      </button>
+
+      <!-- Save as PDF -->
+      <button onclick="doShare('pdf')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#f7f8fa;border:1px solid #e2e5ea;border-radius:12px;cursor:pointer;width:100%;text-align:left;transition:background 0.15s;" onmouseover="this.style.background='#eef0f3'" onmouseout="this.style.background='#f7f8fa'">
+        <span style="font-size:28px;flex-shrink:0;">📄</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);font-family:'Source Sans 3',sans-serif;">Save as PDF</div>
+          <div style="font-size:12px;color:var(--text-light);">Download a dated PDF to keep or print</div>
+        </div>
+        <span style="margin-left:auto;color:#aaa;font-size:18px;">›</span>
+      </button>
+
+      <!-- Email to myself -->
+      <button onclick="doShare('email')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#f7f8fa;border:1px solid #e2e5ea;border-radius:12px;cursor:pointer;width:100%;text-align:left;transition:background 0.15s;" onmouseover="this.style.background='#eef0f3'" onmouseout="this.style.background='#f7f8fa'">
+        <span style="font-size:28px;flex-shrink:0;">📧</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);font-family:'Source Sans 3',sans-serif;">Email to Myself</div>
+          <div style="font-size:12px;color:var(--text-light);">Opens your email app with the plan ready to send</div>
+        </div>
+        <span style="margin-left:auto;color:#aaa;font-size:18px;">›</span>
+      </button>
+
+    </div>
+
+    <button onclick="closeShareMenu()" style="width:100%;margin-top:14px;padding:12px;background:transparent;color:#aaa;border:1px solid #e2e5ea;border-radius:10px;font-size:14px;cursor:pointer;font-family:'Source Sans 3',sans-serif;">Cancel</button>
+  </div>
+</div>
+
+<script>
+
+const SC={Woolworths:'#1a6b3a',Coles:'#e8192c',ALDI:'#0052a5'};
+const SE={Woolworths:'🟢',Coles:'🔴',ALDI:'🔵'};
+const ST=['Woolworths','Coles','ALDI'];
+const DAYS_OF_WEEK=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+function getWeekDates(){const today=new Date();const dow=today.getDay();const monday=new Date(today);monday.setDate(today.getDate()+(dow===0?-6:1-dow));return DAYS_OF_WEEK.map((_,i)=>{const d=new Date(monday);d.setDate(monday.getDate()+i);return d;});}
+function formatDate(date){return date.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
+function isToday(date){return date.toDateString()===new Date().toDateString();}
+function isTomorrow(date){const t=new Date();t.setDate(t.getDate()+1);return date.toDateString()===t.toDateString();}
+
+// Dinner state
+let dp=4,dd=7,dPlan=null,dAS=null,dEx=0;
+let mealIngState={};
+let includeDessert=false;
+let quickPickSelected=new Set();
+let shopCatFilter='all';
+let shopPlan=null,shopAS=null;
+
+function toggleDessert(){
+  includeDessert=!includeDessert;
+  const sw=$('dessertSwitch'),knob=$('dessertKnob'),toggle=$('dessertToggle'),hint=$('dessertHint');
+  if(includeDessert){sw.style.background='#1a6b3a';knob.style.left='24px';toggle.style.borderColor='#1a6b3a';toggle.style.background='#f0faf4';if(hint)hint.style.display='block';}
+  else{sw.style.background='#e2e5ea';knob.style.left='2px';toggle.style.borderColor='var(--border)';toggle.style.background='var(--bg)';if(hint)hint.style.display='none';}
+}
+
+function getIngState(mi){if(!mealIngState[mi])mealIngState[mi]={removed:new Set(),haveIt:new Set(),custom:[]};return mealIngState[mi];}
+function getDefaultQty(qty){
+  if(!qty) return 1;
+  const q=qty.toString().toLowerCase().trim();
+  // Weight/volume units = 1 pack
+  if(/\d+\s*(g|kg|ml|l|lb|oz|litre|liter)/.test(q)) return 1;
+  // Pack/unit descriptors = 1
+  if(/(pack|pkt|dozen|loaf|loaves|bunch|bag|bottle|can|tin|jar|tub|tray|roll|sheet|piece|serve|sachet|punnet|head|block|slice|rasher|fillet)/.test(q)) return 1;
+  // Egg counts like "12 eggs", "6 eggs" = 1 carton
+  if(/(egg|eggs)/.test(q)) return 1;
+  // Numbers followed by items like "4 sausages", "6 rolls" = 1 pack
+  if(/\d+\s+\w+/.test(q)) return 1;
+  // Standalone small number that could be packs — only use if it's 1, 2, or 3
+  const num=parseInt(q);
+  if(!isNaN(num) && num >= 1 && num <= 3) return num;
+  return 1;
+}
+
+function calcAdj(meal,mi,store){
+  const s=getIngState(mi);let t=0;
+  meal.ingredients.forEach((ing,j)=>{if(!s.removed.has(j)&&!s.haveIt.has(j)){const qty=ing.userQty||getDefaultQty(ing.qty);t+=iP(ing,store)*qty;}});
+  s.custom.forEach(c=>{const p=store==='Woolworths'?c.woolworths:store==='Coles'?c.coles:c.aldi;if(p)t+=n2(p)*(c.userQty||1);});
+  return t;
+}
+
+function reRenderMeal(mi){
+  const plan=dPlan||shopPlan;
+  if(!plan)return;
+  const listId=dPlan?'dMealList':'shopIngList';
+  const aS=dPlan?dAS:shopAS;
+  const exp=dPlan?dEx:0;
+  const tfn=dPlan?'togD':'togShop';
+  renderMealList(plan,listId,aS,exp,tfn);
+  if(dPlan)renderGrand(dPlan,'dGrand','Full week dinners',`${dPlan.meals.length} dinners · ${dp} people`);
+}
+
+function toggleSurpriseDay(day){
+  if(surpriseDays.has(day)){surpriseDays.delete(day);}
+  else{surpriseDays.add(day);selectedMeals=selectedMeals.filter(s=>s.day!==day);if(activePickerDay===day)closeMealPicker();}
+  renderDaySlots();
+}
+
+function showToast(msg){
+  let toast=document.getElementById('okiyoToast');
+  if(!toast){toast=document.createElement('div');toast.id='okiyoToast';toast.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 22px;border-radius:24px;font-size:14px;z-index:2000;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity 0.3s;white-space:nowrap;';document.body.appendChild(toast);}
+  toast.textContent=msg;toast.style.opacity='1';
+  clearTimeout(toast._t);toast._t=setTimeout(()=>{toast.style.opacity='0';},3000);
+}
+
+function buildShareText(section){
+  const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  let text=`🌿 OKIYO — Smarter Shopping for Australian Families\n📅 ${today}\n${'─'.repeat(40)}\n\n`;
+  if(section==='dinner'&&dPlan){
+    text+=`🍽️ FAMILY DINNER PLAN\n${dPlan.meals.length} dinners · ${dp} people\n\n`;
+    dPlan.meals.forEach(meal=>{text+=`${meal.day.toUpperCase()}: ${meal.emoji} ${meal.name}\n  🟢 $${n2(meal.totalWoolworths).toFixed(2)} 🔴 $${n2(meal.totalColes).toFixed(2)} 🔵 $${n2(meal.totalALDI).toFixed(2)}\n\n`;});
+    text+=`TOTAL: W $${n2(dPlan.grandTotalWoolworths).toFixed(2)} · C $${n2(dPlan.grandTotalColes).toFixed(2)} · A $${n2(dPlan.grandTotalALDI).toFixed(2)}\n`;
+  }
+  text+=`\n🌿 Okiyo — Smarter Shopping for Australian Families`;
+  return text;
+}
+
+async function addDessertToMeal(mealIdx){
+  const btn=document.getElementById(`dessertBtn_${mealIdx}`);
+  if(!btn)return;
+  btn.textContent='⏳';btn.disabled=true;
+  const plan=dPlan;if(!plan)return;
+  const meal=plan.meals[mealIdx];if(!meal)return;
+  try{
+    const dessertData=await callAI(`Suggest ONE simple dessert for: "${meal.name}". Australian supermarket prices March 2026. 2-3 ingredients max.
+Respond ONLY with valid JSON: {"name":"Vanilla Ice Cream","ingredients":[{"name":"🍰 Vanilla ice cream 2L","woolworths":5.50,"coles":5.00,"aldi":3.99,"qty":"2L"}],"totalWoolworths":5.50,"totalColes":5.00,"totalALDI":3.99}`);
+    dessertData.ingredients.forEach(ing=>{meal.ingredients.push(ing);});
+    meal.totalWoolworths=n2(meal.totalWoolworths)+n2(dessertData.totalWoolworths);
+    meal.totalColes=n2(meal.totalColes)+n2(dessertData.totalColes);
+    meal.totalALDI=n2(meal.totalALDI)+n2(dessertData.totalALDI);
+    meal.name=meal.name+' + '+dessertData.name;
+    meal.dessertAdded=true;
+    plan.grandTotalWoolworths=plan.meals.reduce((s,m)=>s+n2(m.totalWoolworths),0);
+    plan.grandTotalColes=plan.meals.reduce((s,m)=>s+n2(m.totalColes),0);
+    plan.grandTotalALDI=plan.meals.reduce((s,m)=>s+n2(m.totalALDI),0);
+    renderStores(plan,'dSGrid',dAS,'selDStore');
+    renderMealList(plan,'dMealList',dAS,dEx,'togD');
+    renderGrand(plan,'dGrand','Full week dinners',`${plan.meals.length} dinners · ${dp} people`);
+    showToast(`🍰 ${dessertData.name} added!`);
+  }catch(e){btn.textContent='➕ Add';btn.disabled=false;}
+}
+
+function renderShopIngList(){
+  if(!shopPlan||!shopPlan.meals[0])return;
+  const meal=shopPlan.meals[0];
+  const mealIdx=999;
+  const s=getIngState(mealIdx);
+  const ds=shopAS||meal.cheapestStore;
+  const rows=meal.ingredients.map((ing,j)=>{
+    const isRem=s.removed.has(j),isHave=s.haveIt.has(j);
+    const cs=cheapS(ing);
+    const prices=ST.map(st=>{const iC=cs===st,p=iP(ing,st);return `<div class="ing-price-cell" style="${isRem||isHave?'color:#ccc;text-decoration:line-through':iC?'color:'+SC[st]+';font-weight:700':''}">${isRem||isHave?'—':'$'+p.toFixed(2)+(iC?'<span style="font-size:9px;vertical-align:super">★</span>':'')}</div>`;}).join('');
+    return `<div class="ing-grid ing-data-row" style="${isRem?'opacity:0.45':isHave?'background:#f0fff4':''}">
+      <div style="display:flex;align-items:flex-start;gap:6px;">
+        <div onclick="toggleRemoveShop(${j})" style="margin-top:2px;width:18px;height:18px;border-radius:4px;border:2px solid ${isRem?'#e8192c':'#ddd'};background:${isRem?'#e8192c':'#fff'};cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;">${isRem?'✕':''}</div>
+        <div>
+          <span class="ing-name-cell">${ing.name}</span>
+          <span class="ing-qty-cell">${ing.qty||''}</span>
+          ${!isRem?`<button onclick="toggleHaveShop(${j})" style="margin-top:3px;font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid ${isHave?'#1a6b3a':'#ddd'};background:${isHave?'#f0fff4':'#fff'};color:${isHave?'#1a6b3a':'#888'};cursor:pointer;">${isHave?'✓ Have it':'🏠 I have this'}</button>`:''}
+        </div>
+      </div>${prices}</div>`;
+  }).join('');
+  const el=$('shopIngList');if(el)el.innerHTML=rows;
+}
+
+function toggleRemoveShop(j){const s=getIngState(999);if(s.removed.has(j))s.removed.delete(j);else s.removed.add(j);renderShopIngList();}
+function toggleHaveShop(j){const s=getIngState(999);if(s.haveIt.has(j))s.haveIt.delete(j);else s.haveIt.add(j);renderShopIngList();}
+
+// Quick pick items for shopping list
+const QUICK_ITEMS=[
+  {name:'Milk 2L',emoji:'🥛',cat:'dairy'},{name:'Cheese Slices',emoji:'🧀',cat:'dairy'},{name:'Butter 500g',emoji:'🧈',cat:'dairy'},{name:'Yoghurt',emoji:'🥛',cat:'dairy'},{name:'Cream',emoji:'🥛',cat:'dairy'},
+  {name:'White Bread',emoji:'🍞',cat:'bakery'},{name:'Wholemeal Bread',emoji:'🍞',cat:'bakery'},{name:'Wraps',emoji:'🫓',cat:'bakery'},{name:'English Muffins',emoji:'🥯',cat:'bakery'},
+  {name:'Chicken Breast',emoji:'🍗',cat:'meat'},{name:'Beef Mince 500g',emoji:'🥩',cat:'meat'},{name:'Sausages',emoji:'🌭',cat:'meat'},{name:'Bacon',emoji:'🥓',cat:'meat'},{name:'Tuna Tin',emoji:'🐟',cat:'meat'},
+  {name:'Bananas',emoji:'🍌',cat:'produce'},{name:'Apples',emoji:'🍎',cat:'produce'},{name:'Tomatoes',emoji:'🍅',cat:'produce'},{name:'Onions',emoji:'🧅',cat:'produce'},{name:'Potatoes',emoji:'🥔',cat:'produce'},{name:'Carrots',emoji:'🥕',cat:'produce'},{name:'Broccoli',emoji:'🥦',cat:'produce'},
+  {name:'Pasta 500g',emoji:'🍝',cat:'pantry'},{name:'Rice 1kg',emoji:'🍚',cat:'pantry'},{name:'Tinned Tomatoes',emoji:'🍅',cat:'pantry'},{name:'Olive Oil',emoji:'🫙',cat:'pantry'},{name:'Vegemite',emoji:'🫙',cat:'pantry'},{name:'Peanut Butter',emoji:'🥜',cat:'pantry'},
+  {name:'Toilet Paper 12pk',emoji:'🧻',cat:'household'},{name:'Garbage Bags',emoji:'🗑️',cat:'household'},{name:'Dishwashing Liquid',emoji:'🧴',cat:'household'},{name:'Laundry Powder',emoji:'🧺',cat:'household'},
+  {name:'Shampoo',emoji:'🧴',cat:'personal'},{name:'Toothpaste',emoji:'🪥',cat:'personal'},{name:'Body Wash',emoji:'🧴',cat:'personal'},{name:'Deodorant',emoji:'🧴',cat:'personal'},
+  {name:'Coffee',emoji:'☕',cat:'drinks'},{name:'Tea Bags',emoji:'🍵',cat:'drinks'},{name:'Orange Juice 1L',emoji:'🧃',cat:'drinks'},{name:'Soft Drink',emoji:'🥤',cat:'drinks'},
+  {name:'Chips',emoji:'🥔',cat:'snacks'},{name:'Biscuits',emoji:'🍪',cat:'snacks'},{name:'Chocolate Block',emoji:'🍫',cat:'snacks'},{name:'Muesli Bars',emoji:'🍫',cat:'snacks'},
+  {name:'Frozen Peas',emoji:'🧊',cat:'frozen'},{name:'Frozen Chips',emoji:'🍟',cat:'frozen'},{name:'Ice Cream 2L',emoji:'🍦',cat:'frozen'},
+  {name:'Nappies',emoji:'👶',cat:'baby'},{name:'Baby Wipes',emoji:'🧼',cat:'baby'},{name:'Baby Formula',emoji:'🍼',cat:'baby'},
+  {name:'Dog Food',emoji:'🐕',cat:'pets'},{name:'Cat Food',emoji:'🐈',cat:'pets'},{name:'Cat Litter',emoji:'🐈',cat:'pets'},
+];
+
+function filterShopCat(cat, btn) {
+  shopCatFilter = cat;
+  document.querySelectorAll('#shopCatBtns .pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Update panel label
+  const label = $('shopCatLabel');
+  if (label) {
+    const names = {
+      all:'All Items', dairy:'🥛 Dairy', bakery:'🍞 Bakery', meat:'🥩 Meat',
+      produce:'🥦 Fruit & Veg', pantry:'🧴 Pantry', household:'🧻 Household',
+      personal:'🧴 Personal Care', drinks:'☕ Drinks', snacks:'🍫 Snacks',
+      frozen:'🧊 Frozen', baby:'👶 Baby', pets:'🐾 Pets'
+    };
+    label.textContent = names[cat] || 'All Items';
+  }
+  renderQuickGrid();
+}
+
+function renderQuickGrid(){
+  const el=$('shopQuickGrid');if(!el)return;
+  const filtered=shopCatFilter==='all'?QUICK_ITEMS:QUICK_ITEMS.filter(i=>i.cat===shopCatFilter);
+  el.innerHTML=filtered.map(item=>{
+    const isSel=quickPickSelected.has(item.name);
+    return `<button onclick="toggleQuickPick('${item.name.replace(/'/g,"\\'")}')" style="padding:6px 10px;border-radius:20px;border:1.5px solid ${isSel?'#1a6b3a':'var(--border)'};background:${isSel?'#f0faf4':'#fff'};color:${isSel?'#1a6b3a':'var(--text-mid)'};font-size:12px;font-weight:${isSel?700:400};cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:4px;white-space:nowrap;">${item.emoji} ${item.name}${isSel?' ✓':''}</button>`;
+  }).join('');
+}
+
+function toggleQuickPick(name){if(quickPickSelected.has(name))quickPickSelected.delete(name);else quickPickSelected.add(name);updateQuickSummary();renderQuickGrid();}
+function updateQuickSummary(){const count=quickPickSelected.size;const s=$('shopPickedSummary');if(!s)return;if(count>0){s.style.display='block';const el=$('shopPickedCount');if(el)el.textContent=`${count} item${count>1?'s':''}`;}else{s.style.display='none';}}
+function clearQuickPicks(){quickPickSelected.clear();updateQuickSummary();renderQuickGrid();}
+
+setTimeout(()=>{renderQuickGrid();renderDaySlots();},150);
+
+function searchMeals(val){currentSearchTerm=val.toLowerCase().trim();$('searchClear').style.display=val?'block':'none';renderMealLibrary();}
+function clearSearch(){currentSearchTerm='';$('mealSearchInput').value='';$('searchClear').style.display='none';renderMealLibrary();}
+
+function openDayPicker(day){
+  activePickerDay=day;
+  const weekDates=getWeekDates();const dayIdx=DAYS_OF_WEEK.indexOf(day);
+  const dateStr=dayIdx>=0?formatDate(weekDates[dayIdx]):'';
+  $('pickerDayLabel').textContent=`Choose meal for ${day} ${dateStr}`;
+  $('mealPicker').style.display='block';
+  $('mealPicker').scrollIntoView({behavior:'smooth',block:'nearest'});
+  renderMealLibrary();renderDaySlots();
+}
+
+function closeMealPicker(){activePickerDay=null;$('mealPicker').style.display='none';renderDaySlots();}
+
+function clearDinnerSetup(){
+  $('dBudget').value=200;dHint();dp=4;$('dPeopleVal').textContent=4;dSetDays(7);
+  document.querySelectorAll('#dDietContainer .pill-btn.active').forEach(b=>b.classList.remove('active'));
+  if(includeDessert)toggleDessert();
+  selectedMeals=[];surpriseDays.clear();renderDaySlots();
+  lastSurpriseResults=null;lastChooseResults=null;
+}
+
+async function genShoppingList(){
+  const text=($('shopTextInput').value||'').trim();
+  const url=($('shopUrlInput')?$('shopUrlInput').value||'':'').trim();
+  const quickItems=Array.from(quickPickSelected).join(', ');
+  const combined=[quickItems,text].filter(Boolean).join(', ');
+  const input=combined||url;
+  if(!input){showErr('shopErr','Please select items or type what you would like to add.');return;}
+  hideErr('shopErr');
+  const budget=parseInt($('shlBudget').value)||0;
+  hide('shop-setup');show('shop-loading');window.scrollTo({top:0,behavior:'instant'});
+  $('shopLoadTxt').textContent=`Finding prices for "${input.substring(0,40)}${input.length>40?'...':''}"`;
+  try{
+    shopPlan=await callAI(`You are an Australian grocery price checker.
+The user has a shopping list: "${input}"
+${budget?`Budget: AUD $${budget}`:'No budget specified'}
+CRITICAL RULE: Treat every item EXACTLY as written. Do NOT break items into sub-ingredients.
+"Bread" = 1 loaf of bread. "Milk" = 1 bottle of milk. Price each item as found on a supermarket shelf.
+Use realistic current Australian supermarket prices reflecting March 2026 inflation. ALDI 10-25% cheaper.
+Respond ONLY with valid JSON no markdown:
+{"title":"My Shopping List","sub":"${input.substring(0,50)}","meals":[{"day":"Shopping List","name":"My Shopping List","emoji":"🛒","serves":1,"cookTime":0,"ingredients":[{"name":"Bread — White Loaf","woolworths":3.50,"coles":3.20,"aldi":2.59,"qty":"1 loaf"}],"totalWoolworths":45.50,"totalColes":43.20,"totalALDI":36.80,"cheapestStore":"ALDI"}],"grandTotalWoolworths":45.50,"grandTotalColes":43.20,"grandTotalALDI":36.80,"cheapestStoreOverall":"ALDI","budgetNote":"${budget?`vs $${budget} budget`:''}"}`)
+    shopAS=null;
+    hide('shop-loading');show('shop-results');
+    const title=$('shopListTitle');const sub=$('shopListSub');
+    if(title)title.textContent=shopPlan.title||'My Shopping List';
+    if(sub)sub.textContent=shopPlan.sub||`${shopPlan.meals[0]?.ingredients?.length||0} items`;
+    updateShopBanner(budget,shopPlan.meals[0]?.ingredients?.length||0);
+    renderStores(shopPlan,'shopSGrid',shopAS,'selShopStore');
+    renderShopIngList();
+    renderGrand(shopPlan,'shopGrand','Your shopping total',shopPlan.budgetNote||'');
+  }catch(e){hide('shop-loading');show('shop-setup');showErr('shopErr','Something went wrong. Please try again.');}
+}
+
+function shopReset(){
+  shopPlan=null;shopAS=null;mealIngState[999]=null;
+  const ti=$('shopTextInput');if(ti)ti.value='';
+  quickPickSelected.clear();updateQuickSummary();renderQuickGrid();
+  hide('shop-results');show('shop-setup');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selShopStore(s){shopAS=shopAS===s?null:s;renderStores(shopPlan,'shopSGrid',shopAS,'selShopStore');renderShopIngList();}
+
+// ── Share menu
+let currentShareSection=null;
+function openShareMenu(section){
+  currentShareSection=section;
+  const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+  const titles={dinner:`Your family dinner plan — ${today}`,shop:`Your shopping list — ${today}`};
+  const sub=$('shareSubtitle');if(sub)sub.textContent=titles[section]||`Okiyo Plan — ${today}`;
+  $('shareModal').style.display='flex';document.body.style.overflow='hidden';
+}
+function closeShareMenu(e){if(!e||e.target===$('shareModal')){$('shareModal').style.display='none';document.body.style.overflow='';}}
+
+async function doShare(method){
+  const text=buildShareText(currentShareSection);
+  const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+  const title=`Okiyo Plan — ${today}`;
+  closeShareMenu();
+  if(method==='native'){if(navigator.share){try{await navigator.share({title,text});}catch(e){try{await navigator.clipboard.writeText(text);showToast('📋 Copied!');}catch(e2){}}}else{try{await navigator.clipboard.writeText(text);showToast('📋 Copied — paste anywhere!');}catch(e){}}}
+  else if(method==='clipboard'){try{await navigator.clipboard.writeText(text);showToast('📋 Copied! Paste into Notes or WhatsApp.');}catch(e){showToast('Could not copy — try another option.');}}
+  else if(method==='pdf'){const win=window.open('','_blank');if(win){win.document.write(`<!DOCTYPE html><html><head><title>${title}</title></head><body><pre style="font-family:Arial;font-size:13px;line-height:1.6;">${text.replace(/</g,'&lt;')}</pre></body></html>`);win.onload=()=>win.print();showToast('📄 Opening print dialog — choose Save as PDF');}}
+  else if(method==='email'){window.location.href=`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text)}`;showToast('📧 Opening email...');}
+}
+
+// ── Global smart voice
+let globalVoiceActive=false;
+let smartVoiceResult=null;
+
+function startGlobalVoice(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){showToast('🎤 Voice works when the app is live on the web — coming soon!');return;}
+  if(globalVoiceActive)return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const rec=new SR();rec.lang='en-AU';rec.interimResults=false;rec.maxAlternatives=1;
+  const btn=$('globalVoiceBtn'),icon=$('globalVoiceIcon'),label=$('globalVoiceLabel');
+  // Also update whichever tab voice button was tapped
+  const dIcon=$('dVoiceBtn');const sIcon=$('shopVoiceBtn');
+  globalVoiceActive=true;
+  if(icon){icon.textContent='🔴';label.textContent='Listening...';}
+  rec.onresult=async(e)=>{
+    const transcript=e.results[0][0].transcript;
+    if(icon){icon.textContent='⏳';label.textContent='Working it out...';}
+    try{
+      const parsed=await callAI(`You are Okiyo, an Australian family grocery app. Analyse this voice request: "${transcript}"
+
+Extract ALL of the following that are mentioned:
+- dinnerSettings: budget (number), people (number), days (number 1-7), dietary (array), mode ("surprise" or "choose")
+- mealAssignments: array of {day, meal, emoji, surprise} for I'll Choose mode
+- surpriseMeRest: true if they want remaining days as surprise
+- kidsSettings: budget (number), kids (number), days (number 1-5), types (array of "lunch"/"snacks")
+- shoppingItems: array of item strings to add to shopping list
+- summary: one friendly sentence explaining what Okiyo understood
+
+Examples:
+- "7 nights dinner budget 200 dollars family of 4" → dinnerSettings:{budget:200,people:4,days:7,mode:"surprise"}
+- "kids lunch for 3 kids 5 days budget 80 dollars" → kidsSettings:{budget:80,kids:3,days:5,types:["lunch","snacks"]}
+- "add milk bread and eggs to my shopping list" → shoppingItems:["Milk 2L","Bread","Eggs 12pk"]
+- "pasta tuesday chicken friday surprise me the rest" → mealAssignments:[{day:"Tuesday",meal:"Pasta",emoji:"🍝"},{day:"Friday",meal:"Chicken",emoji:"🍗"}], surpriseMeRest:true
+
+Respond ONLY with valid JSON:
+{"transcript":"${transcript.replace(/"/g,"'")}","dinnerSettings":{"budget":null,"people":null,"days":null,"dietary":[],"mode":null},"mealAssignments":[],"surpriseMeRest":false,"kidsSettings":{"budget":null,"kids":null,"days":null,"types":[]},"shoppingItems":[],"summary":"Friendly summary of what was understood"}`);
+      smartVoiceResult=parsed;
+      if(icon){icon.textContent='✅';label.textContent='Got it!';}
+      const trans=$('smartVoiceTranscript');if(trans)trans.innerHTML=`<em>"${transcript}"</em>`;
+      buildSmartVoiceActions(parsed);
+      $('smartVoiceModal').style.display='flex';
+      setTimeout(()=>{
+        if(icon){icon.textContent='🎤';label.textContent='Speak your meal plan & shopping list';}
+        globalVoiceActive=false;
+      },1500);
+    }catch(err){
+      if(icon){icon.textContent='🎤';label.textContent='Speak your meal plan & shopping list';}
+      globalVoiceActive=false;showToast('Could not understand — please try again');
+    }
+  };
+  rec.onerror=()=>{
+    if(icon){icon.textContent='🎤';label.textContent='Speak your meal plan & shopping list';}
+    globalVoiceActive=false;
+  };
+  rec.start();
+}
+
+function buildSmartVoiceActions(parsed){
+  const container=$('smartVoiceActions');if(!container)return;
+  let html='';
+  if(parsed.summary)html+=`<div style="background:#f0faf4;border:1px solid #c8e6c9;border-radius:10px;padding:12px 14px;font-size:13px;color:#1a6b3a;font-weight:600;">🌿 ${parsed.summary}</div>`;
+  const ds=parsed.dinnerSettings;
+  if(ds&&(ds.budget||ds.people||ds.days)){
+    html+=`<div style="background:#f7f8fa;border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🍽️ Family Dinners</div>
+      ${ds.budget?`<div style="font-size:13px;padding:2px 0;">💰 Budget: <strong>$${ds.budget}</strong></div>`:''}
+      ${ds.people?`<div style="font-size:13px;padding:2px 0;">👨‍👩‍👧‍👦 People: <strong>${ds.people}</strong></div>`:''}
+      ${ds.days?`<div style="font-size:13px;padding:2px 0;">📅 Nights: <strong>${ds.days}</strong></div>`:''}
+      ${ds.dietary&&ds.dietary.length?`<div style="font-size:13px;padding:2px 0;">🥗 Dietary: <strong>${ds.dietary.join(', ')}</strong></div>`:''}
+    </div>`;
+  }
+  if(parsed.mealAssignments&&parsed.mealAssignments.length>0){
+    html+=`<div style="background:#f7f8fa;border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">👨‍🍳 I'll Choose Meals</div>
+      ${parsed.mealAssignments.map(m=>`<div style="font-size:13px;color:var(--text);padding:3px 0;">${m.emoji||'🍽️'} <strong>${m.meal}</strong> → ${m.day}</div>`).join('')}
+      ${parsed.surpriseMeRest?`<div style="font-size:12px;color:#7c3aed;margin-top:6px;font-weight:600;">✨ Remaining days → Okiyo will surprise you!</div>`:''}
+    </div>`;
+  }
+  const ks=parsed.kidsSettings;
+  if(ks&&(ks.budget||ks.kids||ks.days)){
+    html+=`<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:#c2410c;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🎒 Kids School Lunch</div>
+      ${ks.budget?`<div style="font-size:13px;padding:2px 0;">💰 Budget: <strong>$${ks.budget}</strong></div>`:''}
+      ${ks.kids?`<div style="font-size:13px;padding:2px 0;">👧 Kids: <strong>${ks.kids}</strong></div>`:''}
+      ${ks.days?`<div style="font-size:13px;padding:2px 0;">📅 Days: <strong>${ks.days}</strong></div>`:''}
+      ${ks.types&&ks.types.length?`<div style="font-size:13px;padding:2px 0;">🥪 Types: <strong>${ks.types.join(' & ')}</strong></div>`:''}
+    </div>`;
+  }
+  if(parsed.shoppingItems&&parsed.shoppingItems.length>0){
+    html+=`<div style="background:#f7f8fa;border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🛒 Shopping List</div>
+      ${parsed.shoppingItems.map(i=>`<div style="font-size:13px;color:var(--text);padding:3px 0;">• ${i}</div>`).join('')}
+    </div>`;
+  }
+  container.innerHTML=html||`<div style="font-size:13px;color:var(--text-light);text-align:center;padding:12px;">Nothing detected — try again!</div>`;
+}
+
+function applySmartVoice(){
+  if(!smartVoiceResult)return;
+  const parsed=smartVoiceResult;
+
+  // ── Apply dinner settings
+  const ds=parsed.dinnerSettings;
+  if(ds){
+    if(ds.budget)$('dBudget').value=ds.budget;
+    if(ds.people){dp=Math.max(1,Math.min(12,ds.people));$('dPeopleVal').textContent=dp;}
+    if(ds.days)dSetDays(Math.max(1,Math.min(7,ds.days)));
+    if(ds.dietary&&ds.dietary.length)document.querySelectorAll('#dDietContainer .pill-btn').forEach(btn=>{if(ds.dietary.some(d=>btn.textContent.toLowerCase().includes(d.toLowerCase())))btn.classList.add('active');});
+    dHint();
+  }
+
+  // ── Apply meal assignments (I'll Choose)
+  if(parsed.mealAssignments&&parsed.mealAssignments.length>0){
+    switchToMode('choose');setMode('choose');
+    parsed.mealAssignments.forEach(m=>{
+      const day=DAYS_OF_WEEK.find(d=>d.toLowerCase().startsWith(m.day.toLowerCase().slice(0,3)));
+      if(day){const libMeal=MEAL_LIBRARY.find(ml=>ml.name.toLowerCase().includes(m.meal.toLowerCase()));selectedMeals=selectedMeals.filter(s=>s.day!==day);selectedMeals.push({meal:libMeal||{name:m.meal,emoji:m.emoji||'🍽️',cat:'custom'},day});}
+    });
+    if(parsed.surpriseMeRest){
+      const assignedDays=parsed.mealAssignments.map(m=>DAYS_OF_WEEK.find(d=>d.toLowerCase().startsWith(m.day.toLowerCase().slice(0,3)))).filter(Boolean);
+      DAYS_OF_WEEK.slice(0,dd).filter(d=>!assignedDays.includes(d)).forEach(d=>surpriseDays.add(d));
+    }
+    renderDaySlots();
+  } else if(ds&&ds.mode==='surprise'){
+    switchToMode('surprise');
+  }
+
+  // ── Apply kids settings
+  const ks=parsed.kidsSettings;
+  if(ks&&(ks.budget||ks.kids||ks.days)){
+    switchTab('kids');
+    if(ks.budget)$('kBudget').value=ks.budget;
+    if(ks.kids){kk=Math.max(1,Math.min(10,ks.kids));$('kKidsVal').textContent=kk;}
+    if(ks.days)kSetDays(Math.max(1,Math.min(5,ks.days)));
+    if(ks.types&&ks.types.length){
+      ['lunch','snacks'].forEach(t=>{
+        const btn=$(t==='lunch'?'kTypeLunch':'kTypeSnacks');
+        if(btn){if(ks.types.includes(t))btn.classList.add('active');else btn.classList.remove('active');}
+      });
+      kTypes=ks.types;
+    }
+    kHint();
+  }
+
+  // ── Apply shopping items
+  if(parsed.shoppingItems&&parsed.shoppingItems.length>0){
+    const ex=($('shopTextInput').value||'').trim();
+    $('shopTextInput').value=ex?ex+', '+parsed.shoppingItems.join(', '):parsed.shoppingItems.join(', ');
+  }
+
+  closeSmartVoiceModal();
+  showToast('✅ Okiyo applied everything!');
+}
+
+function closeSmartVoiceModal(e){if(!e||e.target===$('smartVoiceModal')){$('smartVoiceModal').style.display='none';smartVoiceResult=null;}}
+// Kids state
+
+// ── Splash screen
+function dismissSplash(){
+  const splash=$('splashScreen');
+  if(splash){
+    splash.style.transition='opacity 0.4s ease';
+    splash.style.opacity='0';
+    setTimeout(()=>{splash.style.display='none';},400);
+  }
+}
+
+function switchTab(t){
+  $('section-dinner').style.display=t==='dinner'?'block':'none';
+  $('section-shop').style.display=t==='shop'?'block':'none';
+  $('section-kids').style.display=t==='kids'?'block':'none';
+  $('tab-dinner').className='tab tab-dinner-btn'+(t==='dinner'?' active':'');
+  $('tab-shop').className='tab'+(t==='shop'?' active':'');
+  $('tab-kids').className='tab'+(t==='kids'?' active':'');
+}
+
+// ── Kids School Lunch state
+let kk=2, kd=5, kPlan=null, kAS=null, kTypes=['lunch','snacks'];
+
+function kHint(){const b=parseInt($('kBudget').value)||0;$('kHintTxt').textContent=`≈ $${(b/kd/kk).toFixed(2)} per child per day`;}
+function kKidsChange(n){kk=Math.max(1,Math.min(10,kk+n));$('kKidsVal').textContent=kk;kHint();}
+function kSetDays(n){
+  kd=n;
+  ['kd1','kd2','kd3','kd4','kd5'].forEach(id=>{const el=$(id);if(el)el.classList.remove('active');});
+  const active=$('kd'+n);if(active)active.classList.add('active');
+  $('kDaysHint').textContent=n===5?'5 days — full school week':n+' day'+(n>1?'s':'');
+  kHint();
+}
+function kToggleType(type,btn){
+  btn.classList.toggle('active');
+  if(kTypes.includes(type))kTypes=kTypes.filter(t=>t!==type);
+  else kTypes.push(type);
+}
+
+async function genKids(){
+  const budget=parseInt($('kBudget').value)||0;
+  if(budget<10){showErr('kErr','Please enter a budget of at least $10.');return;}
+  if(kTypes.length===0){showErr('kErr','Please select at least one meal type (Lunch or Snacks).');return;}
+  hideErr('kErr');
+  const diet=Array.from(document.querySelectorAll('#kDietContainer .pill-btn.active')).map(b=>b.textContent.trim());
+
+  const perDayBudget = parseFloat((budget / kd).toFixed(2));
+  const perDayPerKid = parseFloat((budget / kd / kk).toFixed(2));
+  const exWool = budget;
+  const exColes = parseFloat((budget*0.95).toFixed(2));
+  const exAldi = parseFloat((budget*0.80).toFixed(2));
+  const exDayWool = perDayBudget;
+  const exDayColes = parseFloat((perDayBudget*0.95).toFixed(2));
+  const exDayAldi = parseFloat((perDayBudget*0.80).toFixed(2));
+
+  hide('k-setup');show('k-loading');window.scrollTo({top:0,behavior:'instant'});
+  $('kLoadTxt').textContent=`Finding ${kTypes.join(' & ')} for ${kk} kid${kk>1?'s':''} over ${kd} day${kd>1?'s':''}`;
+  try{
+    kPlan=await callAI(`You are an Australian grocery budgeting assistant planning school lunch boxes.
+Plan ${kTypes.join(' and ')} for ${kk} child${kk>1?'ren':''} for ${kd} school day${kd>1?'s':''}.
+STRICT BUDGET RULES:
+- Total budget for ALL days combined: AUD $${budget} — do NOT exceed this
+- Maximum spend per day across all stores: AUD $${perDayBudget}
+- That is $${perDayPerKid} per child per day — choose items accordingly
+- The grandTotal values MUST be under $${budget}
+${diet.length?'Dietary requirements: '+diet.join(', '):'No dietary restrictions'}
+PORTIONS: Scale for ${kk} child${kk>1?'ren':''} aged 5-12. Keep items practical and budget-friendly — store brand options, bulk buys where possible.
+Use current Australian supermarket prices reflecting March 2026 real-world data. ALDI is significantly cheaper on pantry staples like bread, spreads and packaged snacks (30-40% less). Fresh fruit prices are high — strawberries $6.49/500g, apples $5.99/kg, raspberries $3.99/125g. Keep lunchbox items practical and budget-friendly using store brand options.
+Generate one entry per day with different items each day — no repeats across the week.
+Respond ONLY with valid JSON no markdown:
+{"meals":[{"day":"Monday","name":"Monday Lunch Box","emoji":"🥪","serves":${kk},"cookTime":10,"ingredients":[{"name":"Wholemeal bread loaf","woolworths":3.50,"coles":3.20,"aldi":2.59,"qty":"1 loaf"},{"name":"Shaved ham 200g","woolworths":4.50,"coles":4.20,"aldi":3.49,"qty":"200g"}],"totalWoolworths":${exDayWool},"totalColes":${exDayColes},"totalALDI":${exDayAldi},"cheapestStore":"ALDI"}],"grandTotalWoolworths":${exWool},"grandTotalColes":${exColes},"grandTotalALDI":${exAldi},"cheapestStoreOverall":"ALDI","budgetNote":"${kd} days of ${kTypes.join(' & ')} for ${kk} kid${kk>1?'s':''} — fits within $${budget} budget"}`);
+    kAS=null;
+    hide('k-loading');show('k-results');
+    updateKidsBanner(budget,kd,kk,kTypes.map(t=>t.charAt(0).toUpperCase()+t.slice(1)).join(' & '));
+    renderStores(kPlan,'kSGrid',kAS,'selKStore');
+    renderMealList(kPlan,'kMealList',kAS,null,'togK');
+    renderGrand(kPlan,'kGrand','School lunch total',`${kd} days · ${kk} kids`);
+  }catch(e){hide('k-loading');show('k-setup');showErr('kErr','Something went wrong. Please try again.');}
+}
+
+function selKStore(s){kAS=kAS===s?null:s;renderStores(kPlan,'kSGrid',kAS,'selKStore');renderMealList(kPlan,'kMealList',kAS,null,'togK');$('kFHint').textContent=kAS?`Showing ${SE[kAS]} ${kAS} — tap to deselect`:'Tap a store to highlight prices';}
+function togK(i){renderMealList(kPlan,'kMealList',kAS,i,'togK');}
+function kReset(){kPlan=null;kAS=null;hide('k-results');show('k-setup');window.scrollTo({top:0,behavior:'smooth'});}
+// ── State
+let currentMode = 'surprise';
+let lastSurpriseResults = null;
+let lastChooseResults = null;
+let selectedMeals = [];
+let surpriseDays = new Set();
+let activePickerDay = null;
+let currentFilter = 'all';
+let currentSearchTerm = '';
+
+
+// ── Mode switching
+function switchToMode(mode) {
+  if (dPlan && dPlan._mode === 'surprise') lastSurpriseResults = JSON.parse(JSON.stringify(dPlan));
+  if (dPlan && dPlan._mode === 'choose') lastChooseResults = JSON.parse(JSON.stringify(dPlan));
+  if (mode === 'surprise') {
+    if (lastSurpriseResults) {
+      dPlan = lastSurpriseResults; dEx=0; dAS=null;
+      hide('d-setup'); show('d-results');
+      $('dBNote').textContent = dPlan.budgetNote||'';
+      renderStores(dPlan,'dSGrid',dAS,'selDStore');
+      renderMealList(dPlan,'dMealList',dAS,dEx,'togD');
+      renderGrand(dPlan,'dGrand','Full week dinners',dPlan.meals.length+' dinners · '+dp+' people');
+      updateResultButtons('surprise');
+    } else { hide('d-results'); show('d-setup'); setMode('surprise'); }
+  } else {
+    if (lastChooseResults) {
+      dPlan = lastChooseResults; dEx=0; dAS=null;
+      hide('d-setup'); show('d-results');
+      $('dBNote').textContent = dPlan.budgetNote||'';
+      renderStores(dPlan,'dSGrid',dAS,'selDStore');
+      renderMealList(dPlan,'dMealList',dAS,dEx,'togD');
+      renderGrand(dPlan,'dGrand','Your chosen meals',dPlan.meals.length+' dinners · '+dp+' people');
+      updateResultButtons('choose');
+    } else { hide('d-results'); show('d-setup'); setMode('choose'); }
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateBudgetBanner(budget, nights, people) {
+  const bd = $('dBudgetDisplay');
+  const pd = $('dPlanDisplay');
+  if (bd) bd.textContent = '$' + budget;
+  if (pd) pd.textContent = nights + ' night' + (nights > 1 ? 's' : '') + ' · ' + people + ' people';
+  setTimeout(() => {
+    if (!dPlan) return;
+    const cheapestStore = dPlan.cheapestStoreOverall;
+    const cheapestTotal = n2(cheapestStore === 'Woolworths' ? dPlan.grandTotalWoolworths : cheapestStore === 'Coles' ? dPlan.grandTotalColes : dPlan.grandTotalALDI);
+    const leftover = budget - cheapestTotal;
+    const savingsEl = $('dSavingsMsg');
+    if (savingsEl) {
+      if (leftover > 0) {
+        savingsEl.innerHTML = `🌿 <strong>Okiyo found ${nights} dinner${nights>1?'s':''} for just $${cheapestTotal.toFixed(2)}</strong> at ${cheapestStore} — you have <strong style="color:#1a6b3a">$${leftover.toFixed(2)} left over</strong> from your $${budget} budget! 🎉`;
+      } else {
+        savingsEl.innerHTML = `🌿 <strong>Okiyo found ${nights} dinner${nights>1?'s':''} for $${cheapestTotal.toFixed(2)}</strong> at ${cheapestStore} — right on budget!`;
+      }
+      savingsEl.style.display = 'block';
+    }
+  }, 100);
+}
+
+function updateKidsBanner(budget, days, kids, types) {
+  const bd = $('kBudgetDisplay');
+  const pd = $('kPlanDisplay');
+  if (bd) bd.textContent = '$' + budget;
+  if (pd) pd.textContent = days + ' day' + (days > 1 ? 's' : '') + ' · ' + kids + ' kid' + (kids > 1 ? 's' : '') + ' · ' + types;
+  setTimeout(() => {
+    if (!kPlan) return;
+    const cheapestStore = kPlan.cheapestStoreOverall;
+    const cheapestTotal = n2(cheapestStore === 'Woolworths' ? kPlan.grandTotalWoolworths : cheapestStore === 'Coles' ? kPlan.grandTotalColes : kPlan.grandTotalALDI);
+    const leftover = budget - cheapestTotal;
+    const savingsEl = $('kSavingsMsg');
+    if (savingsEl) {
+      if (leftover > 0) {
+        savingsEl.innerHTML = `🎒 <strong>Okiyo found ${days} day${days>1?'s':''} of lunches for just $${cheapestTotal.toFixed(2)}</strong> at ${cheapestStore} — you have <strong style="color:#ea580c">$${leftover.toFixed(2)} left over</strong> from your $${budget} budget! 🎉`;
+      } else {
+        savingsEl.innerHTML = `🎒 <strong>Okiyo found ${days} day${days>1?'s':''} of lunches for $${cheapestTotal.toFixed(2)}</strong> at ${cheapestStore} — right on budget!`;
+      }
+      savingsEl.style.display = 'block';
+    }
+  }, 100);
+}
+
+function updateShopBanner(budget, itemCount) {
+  const bd = $('shopBudgetDisplay');
+  const pd = $('shopPlanDisplay');
+  if (bd) bd.textContent = budget ? '$' + budget : 'No limit';
+  if (pd) pd.textContent = itemCount + ' item' + (itemCount !== 1 ? 's' : '');
+  setTimeout(() => {
+    if (!shopPlan) return;
+    const cheapestStore = shopPlan.cheapestStoreOverall;
+    const cheapestTotal = n2(cheapestStore === 'Woolworths' ? shopPlan.grandTotalWoolworths : cheapestStore === 'Coles' ? shopPlan.grandTotalColes : shopPlan.grandTotalALDI);
+    const leftover = budget ? budget - cheapestTotal : null;
+    const savingsEl = $('shopSavingsMsg');
+    if (savingsEl) {
+      if (leftover !== null && leftover > 0) {
+        savingsEl.innerHTML = `🛒 <strong>Your list costs just $${cheapestTotal.toFixed(2)}</strong> at ${cheapestStore} — you have <strong style="color:#1a6b3a">$${leftover.toFixed(2)} left over</strong> from your $${budget} budget! 🎉`;
+      } else {
+        savingsEl.innerHTML = `🛒 <strong>Cheapest option: $${cheapestTotal.toFixed(2)}</strong> at ${cheapestStore}`;
+      }
+      savingsEl.style.display = 'block';
+    }
+  }, 100);
+}
+
+function updateResultButtons(mode) {
+  const rA=$('rModeABtn'); const rB=$('rModeBBtn');
+  if(!rA||!rB) return;
+  if(mode==='surprise'){
+    rA.style.cssText='padding:10px 14px;border-radius:10px;border:2px solid #7c3aed;background:#7c3aed;color:#fff;cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;';
+    rB.style.cssText='padding:10px 14px;border-radius:10px;border:2px solid #e2e5ea;background:#fff;color:#555;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;';
+  } else {
+    rB.style.cssText='padding:10px 14px;border-radius:10px;border:2px solid #1a6b3a;background:#1a6b3a;color:#fff;cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;';
+    rA.style.cssText='padding:10px 14px;border-radius:10px;border:2px solid #e2e5ea;background:#fff;color:#555;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;';
+  }
+}
+
+
+
+// Dinner controls
+function dHint(){const b=num('dBudget');$('dHintTxt').textContent=`≈ $${(b/dd/dp).toFixed(2)} per person per meal`;}
+function dPeopleChange(n){dp=clamp(dp+n,1,12);$('dPeopleVal').textContent=dp;dHint();}
+function dSetDays(n){dd=n;['dd1','dd2','dd3','dd4','dd5','dd6','dd7'].forEach(id=>{const el=$(id);if(el)el.classList.remove('active');});const active=$('dd'+n);if(active)active.classList.add('active');$('dNightsHint').textContent=n===7?'7 nights — full week':n+' night'+(n>1?'s':'');dHint();}
+
+// Kids controls
+
+// Shared utils
+function $(id){return document.getElementById(id);}
+function num(id){return parseInt($(id).value)||0;}
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
+function show(id){$(id).style.display='block';}
+function hide(id){$(id).style.display='none';}
+function showErr(id,msg){$(id).style.display='block';$(id).textContent=msg;}
+function hideErr(id){$(id).style.display='none';}
+function n2(v){return parseFloat(v)||0;}
+function gT(plan,s){return n2(s==='Woolworths'?plan.grandTotalWoolworths:s==='Coles'?plan.grandTotalColes:plan.grandTotalALDI);}
+function mT(meal,s){return n2(s==='Woolworths'?meal.totalWoolworths:s==='Coles'?meal.totalColes:meal.totalALDI);}
+function iP(ing,s){return n2(s==='Woolworths'?ing.woolworths:s==='Coles'?ing.coles:ing.aldi);}
+function cheapS(ing){return ST.slice().sort((a,b)=>iP(ing,a)-iP(ing,b))[0];}
+function savings(plan){const t=ST.map(s=>gT(plan,s));return Math.max(...t)-Math.min(...t);}
+
+async function callAI(prompt){
+  const r=await fetch('/api/generate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+  });
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message||'API error');
+  if(!d.content)throw new Error('No response');
+  const txt=d.content.map(i=>i.text||'').join('');
+  return JSON.parse(txt.replace(/```json|```/g,'').trim());
+}
+
+function renderStores(plan,gridId,activeStore,clickFn){
+  const minT=Math.min(...ST.map(s=>gT(plan,s)));
+  const maxT=Math.max(...ST.map(s=>gT(plan,s)));
+  $(gridId).innerHTML=ST.map(s=>{
+    const t=gT(plan,s),iC=plan.cheapestStoreOverall===s,isA=activeStore===s;
+    return `<div class="store-card" style="${isA?'background:'+SC[s]+';border-color:'+SC[s]:''}" onclick="${clickFn}('${s}')">
+      <div class="store-card-label" style="${isA?'color:rgba(255,255,255,0.7)':''}">${SE[s]} ${s}</div>
+      <div class="store-card-total" style="${isA?'color:#fff':''}">\$${t.toFixed(2)}</div>
+      ${iC?`<div class="cheapest-tag" style="color:${isA?'rgba(255,255,255,0.9)':SC[s]}">✓ CHEAPEST</div>`:''}
+    </div>`;
+  }).join('')+`<div class="savings-card">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:4px">💰 Max Saving</div>
+    <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:#f5f0e8">\$${savings(plan).toFixed(2)}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px">vs most expensive</div>
+  </div>`;
+}
+
+function renderMealList(plan,listId,activeStore,expanded,toggleFn){
+  $(listId).innerHTML=plan.meals.map((meal,i)=>{
+    const isOpen=expanded===i;
+    const ds=activeStore||meal.cheapestStore;
+    const s=getIngState(i);
+    const adjTotal=calcAdj(meal,i,ds);
+    const mini=ST.map(st=>{
+      const iC=meal.cheapestStore===st;
+      const storeColor=st==='Woolworths'?'#1a6b3a':st==='Coles'?'#e8192c':'#0052a5';
+      return `<span class="mini-price" style="${iC?'background:'+storeColor+';color:#fff':'color:'+storeColor+';font-weight:700'}">${st[0]} \$${mT(meal,st).toFixed(0)}</span>`;
+    }).join('');
+    let ingHTML='';
+    if(isOpen){
+      const rows=meal.ingredients.map((ing,j)=>{
+        const isRem=s.removed.has(j),isHave=s.haveIt.has(j);
+        const cs=cheapS(ing);
+        const qty=ing.userQty||getDefaultQty(ing.qty);
+        const prices=ST.map(st=>{
+          const iC=cs===st,p=iP(ing,st)*qty;
+          const storeTextColor = st==='Woolworths'?'#1a6b3a':st==='Coles'?'#e8192c':'#0052a5';
+          const cellStyle = isRem||isHave?'color:#ccc;text-decoration:line-through':iC?'color:'+storeTextColor+';font-weight:700':'color:'+storeTextColor+';opacity:0.6';
+          return `<div class="ing-price-cell${iC?' cheapest':''}" style="${cellStyle}">${isRem||isHave?'—':'$'+(p).toFixed(2)}${iC&&!isRem&&!isHave?'<span style="font-size:9px;vertical-align:super;margin-left:1px">★</span>':''}</div>`;
+        }).join('');
+        return `<div class="ing-grid ing-data-row" style="${isRem?'opacity:0.4':isHave?'background:#f0fff4':''}">
+          <div style="display:flex;align-items:flex-start;gap:6px;">
+            <div onclick="toggleRemoveIng(${i},${j},'${toggleFn}')" style="margin-top:3px;width:18px;height:18px;border-radius:4px;border:2px solid ${isRem?'#e8192c':'#ddd'};background:${isRem?'#e8192c':'#fff'};cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;">${isRem?'✕':''}</div>
+            <div style="flex:1;min-width:0;">
+              <div class="ing-name-cell" style="${isRem?'text-decoration:line-through;color:#aaa':''}">${ing.name}</div>
+              ${!isRem?`<div style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+                <button onclick="changeQty(${i},${j},-1,'${toggleFn}')" style="width:20px;height:20px;border-radius:50%;border:1px solid #ddd;background:#f7f8fa;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;padding:0;">−</button>
+                <span style="font-size:12px;font-weight:700;color:#111827;min-width:20px;text-align:center;">${qty}</span>
+                <button onclick="changeQty(${i},${j},1,'${toggleFn}')" style="width:20px;height:20px;border-radius:50%;border:1px solid #ddd;background:#f7f8fa;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;padding:0;">+</button>
+                <span style="font-size:10px;color:#aaa;">${ing.qty||''}</span>
+                <button onclick="toggleHaveIt(${i},${j},'${toggleFn}')" style="margin-left:4px;font-size:10px;padding:2px 7px;border-radius:10px;border:1px solid ${isHave?'#1a6b3a':'#ddd'};background:${isHave?'#f0faf4':'#fff'};color:${isHave?'#1a6b3a':'#888'};cursor:pointer;">🏠 ${isHave?'Got it':'Have it'}</button>
+              </div>`:''}
+            </div>
+          </div>${prices}</div>`;
+      }).join('');
+
+      // Custom items
+      const customRows=s.custom.map((c,ci)=>{
+        const qty=c.userQty||1;
+        const prices=ST.map(st=>{
+          const p=(st==='Woolworths'?c.woolworths:st==='Coles'?c.coles:c.aldi)||0;
+          return `<div class="ing-price-cell">${p?'$'+(n2(p)*qty).toFixed(2):'—'}</div>`;
+        }).join('');
+        return `<div class="ing-grid ing-data-row" style="background:#fffbeb;">
+          <div style="display:flex;align-items:flex-start;gap:6px;">
+            <div onclick="removeCustomIng(${i},${ci},'${toggleFn}')" style="margin-top:3px;width:18px;height:18px;border-radius:4px;border:2px solid #e8192c;background:#e8192c;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;">✕</div>
+            <div>
+              <div class="ing-name-cell">➕ ${c.name}</div>
+              <div style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+                <button onclick="changeCustomQty(${i},${ci},-1,'${toggleFn}')" style="width:20px;height:20px;border-radius:50%;border:1px solid #ddd;background:#f7f8fa;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;padding:0;">−</button>
+                <span style="font-size:12px;font-weight:700;color:#111827;min-width:20px;text-align:center;">${qty}</span>
+                <button onclick="changeCustomQty(${i},${ci},1,'${toggleFn}')" style="width:20px;height:20px;border-radius:50%;border:1px solid #ddd;background:#f7f8fa;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;padding:0;">+</button>
+                <span style="font-size:10px;color:#aaa;">${c.qty||''}</span>
+              </div>
+            </div>
+          </div>${prices}</div>`;
+      }).join('');
+
+      const totCols=ST.map(st=>{
+        const t=calcAdj(meal,i,st),iC=meal.cheapestStore===st;
+        return `<div class="totals-price${iC?' cheapest':''}" style="color:${SC[st]};${iC?'font-weight:900':'opacity:0.7'}">\$${t.toFixed(2)}${iC?`<span class="cheapest-note" style="color:${SC[st]}">CHEAPEST</span>`:''}</div>`;
+      }).join('');
+
+      ingHTML=`<div class="ing-table">
+        <div class="ing-grid" style="background:var(--bg2);padding:8px 18px">
+          <div class="ing-col-label">Ingredient</div>
+          ${ST.map(st=>`<div class="ing-col-store" style="color:${SC[st]}">${st==='Woolworths'?'Woolies':st}</div>`).join('')}
+        </div>${rows}${customRows}
+        <div class="ing-grid totals-grid"><div class="totals-label">Meal total</div>${totCols}</div>
+        <div style="padding:10px 18px 14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="showAddCustom(${i},'${toggleFn}')" style="font-size:11px;padding:5px 10px;border-radius:10px;border:1px solid #1a6b3a;background:#f0faf4;color:#1a6b3a;cursor:pointer;">➕ Add item</button>
+        </div>
+        <div id="addCustomBox_${i}" style="display:none;padding:0 18px 14px;">
+          <input id="customIngName_${i}" placeholder="Item name" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:6px;box-sizing:border-box;">
+          <button onclick="addCustomIng(${i},'${toggleFn}')" style="width:100%;padding:8px;background:#1a6b3a;color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">✓ Add & price it</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="meal-card" style="border-color:${isOpen?SC[ds]:'transparent'}">
+      <div class="meal-header" onclick="${toggleFn}(${i})">
+        <div class="meal-emoji">${meal.emoji}</div>
+        <div style="flex:1;min-width:0">
+          <div class="meal-meta">${meal.day||''} ${meal.mealType?'· '+meal.mealType:''} · ⏱ ${meal.cookTime}min · serves ${meal.serves}</div>
+          <div class="meal-name">${meal.name}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="mini-prices">${mini}</div>
+          <div class="meal-total-price" style="color:${SC[ds]}">\$${adjTotal.toFixed(2)}</div>
+          <div class="meal-toggle">${isOpen?'▲ hide':'▼ ingredients'}</div>
+        </div>
+      </div>${ingHTML}
+    </div>`;
+  }).join('');
+}
+
+function renderGrand(plan,boxId,label,sub){
+  const minT=Math.min(...ST.map(s=>gT(plan,s)));
+  const maxT=Math.max(...ST.map(s=>gT(plan,s)));
+  $(boxId).innerHTML=`<div class="grand-title">${label}</div>
+    <div class="grand-sub">${sub}</div>
+    <div class="grand-grid">${ST.map(s=>{
+      const t=gT(plan,s),iC=plan.cheapestStoreOverall===s;
+      return `<div class="grand-store${iC?' cheapest-store':''}" style="${iC?'background:'+SC[s]:''}">
+        <div class="grand-store-name">${SE[s]} ${s}</div>
+        <div class="grand-store-total">\$${t.toFixed(2)}</div>
+        <div class="grand-store-note">${iC?`✓ Best — saves \$${(maxT-t).toFixed(2)}`:`\$${(t-minT).toFixed(2)} more than cheapest`}</div>
+      </div>`;
+    }).join('')}</div>`;
+}
+
+// ── Ingredient controls
+function getPlanByFn(fn){return fn==='togD'?dPlan:fn==='togK'?kPlan:null;}
+function reRenderByFn(fn){
+  if(fn==='togD'){renderMealList(dPlan,'dMealList',dAS,dEx,'togD');renderGrand(dPlan,'dGrand','Full week dinners',`${dPlan.meals.length} dinners · ${dp} people`);}
+  else if(fn==='togK'&&kPlan){renderMealList(kPlan,'kMealList',kAS,null,'togK');renderGrand(kPlan,'kGrand','School lunch total',`${kd} days · ${kk} kids`);}
+}
+function toggleRemoveIng(mi,j,fn){
+  const s=getIngState(mi);
+  if(s.removed.has(j))s.removed.delete(j);else{s.removed.add(j);s.haveIt.delete(j);}
+  reRenderByFn(fn);
+}
+function toggleHaveIt(mi,j,fn){
+  const s=getIngState(mi);
+  if(s.haveIt.has(j))s.haveIt.delete(j);else{s.haveIt.add(j);s.removed.delete(j);}
+  reRenderByFn(fn);
+}
+function changeQty(mi,j,delta,fn){
+  const plan=getPlanByFn(fn);if(!plan)return;
+  const ing=plan.meals[mi]&&plan.meals[mi].ingredients[j];if(!ing)return;
+  ing.userQty=Math.max(1,(ing.userQty||getDefaultQty(ing.qty))+delta);
+  reRenderByFn(fn);
+}
+function showAddCustom(mi,fn){
+  const box=$('addCustomBox_'+mi);
+  if(box)box.style.display=box.style.display==='none'?'block':'none';
+}
+async function addCustomIng(mi,fn){
+  const nameEl=$('customIngName_'+mi);if(!nameEl)return;
+  const name=nameEl.value.trim();if(!name)return;
+  nameEl.value='';const box=$('addCustomBox_'+mi);if(box)box.style.display='none';
+  try{
+    const priced=await callAI(`Price this single grocery item at Australian supermarkets March 2026.
+Item: "${name}"
+Respond ONLY with valid JSON, numbers not strings, no markdown:
+{"name":"${name}","woolworths":3.50,"coles":3.20,"aldi":2.59,"qty":"1 unit"}`);
+    // Ensure prices are numbers not strings
+    const item = {
+      name: priced.name||name,
+      woolworths: parseFloat(priced.woolworths)||0,
+      coles: parseFloat(priced.coles)||0,
+      aldi: parseFloat(priced.aldi)||0,
+      qty: priced.qty||'1',
+      userQty: 1
+    };
+    getIngState(mi).custom.push(item);
+    reRenderByFn(fn);
+    showToast(`➕ ${item.name} added!`);
+  }catch(e){showToast('Could not price item — try again');}
+}
+function removeCustomIng(mi,ci,fn){
+  getIngState(mi).custom.splice(ci,1);
+  reRenderByFn(fn);
+}
+function changeCustomQty(mi,ci,delta,fn){
+  const s=getIngState(mi);
+  if(!s.custom[ci])return;
+  s.custom[ci].userQty=Math.max(1,(s.custom[ci].userQty||1)+delta);
+  reRenderByFn(fn);
+}
+
+// ── Fisher-Yates shuffle — pure random, no repeats
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickRandomMeals(count, dietaryFilters) {
+  let pool = [...MEAL_LIBRARY];
+  // Filter out meals that don't meet dietary needs
+  if (dietaryFilters.includes('Vegetarian')) pool = pool.filter(m => m.cat.includes('veg') || m.cat.includes('pasta') || m.cat.includes('rice'));
+  if (dietaryFilters.includes('No seafood')) pool = pool.filter(m => !m.cat.includes('seafood') && !m.cat.includes('fish'));
+  if (dietaryFilters.includes('Gluten-free')) pool = pool.filter(m => !m.cat.includes('pasta') && !m.cat.includes('bread'));
+  // Shuffle and pick — guaranteed no duplicates
+  const shuffled = shuffleArray(pool);
+  return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
+// ── Dinner generate
+async function genDinner(){
+  const budget=num('dBudget');
+  if(budget<20){showErr('dErr','Please enter a budget of at least $20.');return;}
+  hideErr('dErr');
+  const diet=Array.from(document.querySelectorAll('#dDietContainer .pill-btn.active')).map(b=>b.textContent);
+  hide('d-setup');show('d-loading');window.scrollTo({top:0,behavior:'instant'});
+  $('dLoadTxt').textContent=`Finding ${dd} meals for ${dp} people within \$${budget}`;
+
+  // 🎲 Pick meals randomly using Fisher-Yates — no AI guessing, pure maths
+  const randomMeals = pickRandomMeals(dd, diet);
+  const mealAssignments = randomMeals.map((meal, i) => `${DAYS_OF_WEEK[i]}: ${meal.name} ${meal.emoji}`).join(', ');
+
+  try{
+    dPlan=await callAI(`You are an Australian grocery budgeting assistant. Cost up these EXACT meals for ${dp} people within a total budget of AUD $${budget}.
+MEALS TO COST (do not change these, use exactly as given): ${mealAssignments}
+${diet.length?'Dietary requirements: '+diet.join(', '):''}
+PORTION SIZES: Scale all ingredients to feed exactly ${dp} people using standard Australian adult serving sizes — approximately 180-200g raw protein per person, 75-80g dry pasta or rice per person, vegetables scaled accordingly. Do not under or over cater.
+MEAT & PROTEIN PACKAGING: Use realistic Australian supermarket pack sizes and price per kg — do NOT use fixed arbitrary weights like 800g. Use these real formats:
+- Beef mince: 500g or 1kg packs (Woolworths/Coles ~$10-12/kg, ALDI ~$8-9/kg)
+- Lamb forequarter chops: variable ~1kg tray, price per kg (~$16/kg Woolworths/Coles, ~$13/kg ALDI)
+- Lamb loin chops: variable ~500g-800g tray, ~$29/kg Woolworths/Coles, ~$22/kg ALDI
+- Lamb mince: 500g pack (~$12-14 Woolworths/Coles, ~$10 ALDI)
+- Chicken breast: 500g or 1kg pack (~$10-12/kg Woolworths/Coles, ~$8/kg ALDI)
+- Chicken thighs: 1kg pack (~$8-10/kg Woolworths/Coles, ~$6-7/kg ALDI)
+- Pork chops: variable ~500g-800g tray
+- Sausages: 6-pack ~500g
+- Bacon: 175g-200g pack
+- Fish fillets: 400g-500g pack
+Use current Australian supermarket prices reflecting March 2026 real-world data:
+VERIFIED ALDI PRICES (March 2026): Full cream milk 2L $3.19, Chicken mixed pieces 2kg $8.49, Middle bacon 1kg $10.49, Flour plain 1kg $1.25, Spaghetti 500g $0.89, Margarine spread 500g $2.99, Mushrooms 500g $6.29, Strawberries 500g $6.49, Raspberries 125g $3.99, Brown onion 1kg $1.79, Apple Gala 1kg $5.99, Baby broccoli bunch $1.99, Sweet potato $2.99/kg, Hot dog frankfurts 500g $2.79.
+INFLATION ADJUSTMENTS: Beef and lamb 10-11% higher, coffee 13.5% higher, dairy up ~4%, fresh berries and stone fruit up ~35%, fresh vegetables up ~22-25%, pantry staples (pasta, flour, rice) remain low at ALDI.
+STORE PRICE RULES: ALDI is significantly cheaper on pantry staples (pasta, flour, rice, spreads, canned goods) — often 30-40% less than Woolworths/Coles. However on fresh produce and berries ALDI prices are similar to or only slightly cheaper than Woolworths/Coles. Woolworths/Coles within 5-15% of each other on most items. 5-8 realistic ingredients per meal.
+Respond ONLY with valid JSON no markdown:
+{"meals":[{"day":"Monday","name":"Spaghetti Bolognese","emoji":"🍝","serves":${dp},"cookTime":35,"ingredients":[{"name":"Beef mince 500g","woolworths":8.50,"coles":8.00,"aldi":6.50,"qty":"500g"}],"totalWoolworths":24.50,"totalColes":23.80,"totalALDI":19.20,"cheapestStore":"ALDI"}],"grandTotalWoolworths":145.20,"grandTotalColes":141.80,"grandTotalALDI":118.40,"cheapestStoreOverall":"ALDI","budgetNote":"Fits within \$${budget} budget"}`);
+    dPlan.meals.sort((a,b)=>DAYS_OF_WEEK.indexOf(a.day)-DAYS_OF_WEEK.indexOf(b.day));
+    dPlan._mode='surprise';
+    lastSurpriseResults=JSON.parse(JSON.stringify(dPlan));
+    currentMode='surprise';
+    dEx=0;dAS=null;
+    hide('d-loading');show('d-results');
+    $('dBNote').textContent=dPlan.budgetNote||'';
+    updateBudgetBanner(budget,dd,dp);
+    renderStores(dPlan,'dSGrid',dAS,'selDStore');
+    renderMealList(dPlan,'dMealList',dAS,dEx,'togD');
+    renderGrand(dPlan,'dGrand','Full week dinners',`${dd} dinners · ${dp} people`);
+    updateResultButtons('surprise');
+  }catch(e){hide('d-loading');show('d-setup');showErr('dErr','Something went wrong. Please try again.');}
+}
+function selDStore(s){dAS=dAS===s?null:s;renderStores(dPlan,'dSGrid',dAS,'selDStore');renderMealList(dPlan,'dMealList',dAS,dEx,'togD');$('dFHint').textContent=dAS?`Showing ${SE[dAS]} ${dAS} — tap to deselect`:'Tap a store to highlight prices';}
+function togD(i){dEx=dEx===i?null:i;renderMealList(dPlan,'dMealList',dAS,dEx,'togD');}
+function dReset(){dPlan=null;dAS=null;dEx=0;mealIngState={};lastSurpriseResults=null;lastChooseResults=null;selectedMeals=[];surpriseDays.clear();hide('d-results');show('d-setup');window.scrollTo({top:0,behavior:'smooth'});}
+
+// ── Kids generate
+dHint();
+
+// ══════════════════════════════════════
+// MEAL LIBRARY & MODE SWITCHING
+// ══════════════════════════════════════
+
+const MEAL_LIBRARY = [
+  {name:'Spaghetti Bolognese',emoji:'🍝',cat:'pasta,beef'},
+  {name:'Lasagna',emoji:'🫕',cat:'pasta,beef'},
+  {name:'Fettuccine Carbonara',emoji:'🍝',cat:'pasta'},
+  {name:'Penne Arrabbiata',emoji:'🍝',cat:'pasta,veg'},
+  {name:'Chicken Stir Fry',emoji:'🥘',cat:'chicken,asian'},
+  {name:'Roast Chicken',emoji:'🍗',cat:'chicken'},
+  {name:'Chicken Schnitzel',emoji:'🍗',cat:'chicken'},
+  {name:'Butter Chicken',emoji:'🍛',cat:'chicken,asian'},
+  {name:'Chicken Fried Rice',emoji:'🍚',cat:'chicken,asian'},
+  {name:'Lemon Garlic Chicken',emoji:'🍋',cat:'chicken'},
+  {name:'Beef Tacos',emoji:'🌮',cat:'beef,mexican'},
+  {name:'Beef Stir Fry',emoji:'🥘',cat:'beef,asian'},
+  {name:'Beef Burgers',emoji:'🍔',cat:'beef'},
+  {name:'Shepherd\'s Pie',emoji:'🥧',cat:'beef'},
+  {name:'Beef Curry',emoji:'🍛',cat:'beef,asian'},
+  {name:'Lamb Chops',emoji:'🍖',cat:'beef'},
+  {name:'Fish and Chips',emoji:'🐟',cat:'fish'},
+  {name:'Salmon with Veggies',emoji:'🐟',cat:'fish'},
+  {name:'Fish Tacos',emoji:'🌮',cat:'fish,mexican'},
+  {name:'Prawn Stir Fry',emoji:'🦐',cat:'fish,asian'},
+  {name:'Vegetable Curry',emoji:'🍛',cat:'veg,asian'},
+  {name:'Veggie Stir Fry',emoji:'🥘',cat:'veg,asian'},
+  {name:'Pumpkin Soup',emoji:'🎃',cat:'veg'},
+  {name:'Veggie Pasta',emoji:'🍝',cat:'pasta,veg'},
+  {name:'Fried Rice',emoji:'🍚',cat:'asian,veg'},
+  {name:'Pad Thai',emoji:'🍜',cat:'asian'},
+  {name:'Chicken Noodle Soup',emoji:'🍜',cat:'chicken,asian'},
+  {name:'Beef Nachos',emoji:'🧀',cat:'beef,mexican'},
+  {name:'Bean Burritos',emoji:'🌯',cat:'mexican,veg'},
+  {name:'Chicken Quesadillas',emoji:'🫓',cat:'chicken,mexican'},
+  {name:'Pork Fried Rice',emoji:'🍚',cat:'asian'},
+  {name:'Honey Soy Chicken',emoji:'🍯',cat:'chicken,asian'},
+  {name:'Sausages & Mash',emoji:'🌭',cat:'beef'},
+  {name:'Quiche',emoji:'🥧',cat:'veg'},
+  {name:'Minestrone Soup',emoji:'🍲',cat:'veg'},
+];
+
+function setMode(mode) {
+  currentMode = mode;
+  const aBtn = $('modeABtn');
+  const bBtn = $('modeBBtn');
+  const aPanel = $('modeA-panel');
+  const bPanel = $('modeB-panel');
+
+  if (mode === 'surprise') {
+    aBtn.style.background = '#111827';
+    aBtn.style.color = '#fff';
+    aBtn.style.borderColor = '#111827';
+    bBtn.style.background = '#fff';
+    bBtn.style.color = '#111827';
+    bBtn.style.borderColor = '#e2e5ea';
+    aPanel.style.display = 'block';
+    bPanel.style.display = 'none';
+    $('dVoiceSub').textContent = 'Try: "Family of 4, budget $200, 7 nights, no seafood"';
+  } else {
+    bBtn.style.background = '#1a6b3a';
+    bBtn.style.color = '#fff';
+    bBtn.style.borderColor = '#1a6b3a';
+    aBtn.style.background = '#fff';
+    aBtn.style.color = '#111827';
+    aBtn.style.borderColor = '#e2e5ea';
+    aPanel.style.display = 'none';
+    bPanel.style.display = 'block';
+    $('dVoiceSub').textContent = 'Try: "4 people, $200 budget, pasta Monday, chicken Tuesday"';
+    renderDaySlots();
+    renderMealLibrary();
+  }
+}
+
+function renderDaySlots() {
+  const days = DAYS_OF_WEEK.slice(0, dd);
+  const weekDates = getWeekDates();
+  $('daySlots').innerHTML = days.map((day, i) => {
+    const sel = selectedMeals.find(m => m.day === day);
+    const isSurprise = surpriseDays.has(day);
+    const isActive = activePickerDay === day;
+    const date = weekDates[i];
+    const dateStr = formatDate(date);
+    const isWeekend = i >= 5;
+    const isToday_ = isToday(date);
+    const isTomorrow_ = isTomorrow(date);
+    const todayMark = isToday_ ? ' · Today' : isTomorrow_ ? ' · Tomorrow' : '';
+    const dayColor = isActive ? '#1a6b3a' : isToday_ ? '#d97706' : isTomorrow_ ? '#0052a5' : isWeekend ? '#e8192c' : '#1a6b3a';
+    const dateColor = isActive ? '#1a6b3a' : isToday_ ? '#d97706' : isTomorrow_ ? '#0052a5' : isWeekend ? '#fca5a5' : '#6b8f6b';
+    const bg = sel ? '#f0faf4' : isSurprise ? '#f3e8ff' : isActive ? '#f0faf4' : isWeekend ? '#fff5f5' : '#fff8f0';
+    const borderCol = isActive ? '#1a6b3a' : sel ? '#40916c' : isSurprise ? '#7c3aed' : isWeekend ? '#fca5a5' : '#fcd9a0';
+    const shadow = isActive ? 'box-shadow:0 0 0 3px rgba(26,107,58,0.15);' : sel ? 'box-shadow:0 2px 8px rgba(26,107,58,0.12);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.06);';
+    return `<div style="background:${bg};border:2px solid ${borderCol};border-radius:12px;padding:12px 14px;transition:all 0.15s;position:relative;${shadow}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+        <div>
+          <span style="font-size:10px;font-weight:700;color:${dayColor};letter-spacing:1.5px;text-transform:uppercase;">${day.slice(0,3)}</span>
+          <span style="font-size:10px;color:${dateColor};margin-left:4px;">${dateStr}${todayMark}</span>
+        </div>
+        ${sel
+          ? `<span onclick="clearDayMeal('${day}')" style="font-size:10px;color:#e8192c;cursor:pointer;padding:1px 6px;border-radius:8px;border:1px solid #fca5a5;">✕</span>`
+          : `<span style="font-size:10px;color:#d1d5db;">tap to pick</span>`
+        }
+      </div>
+      ${sel
+        ? `<div onclick="openDayPicker('${day}')" style="font-size:13px;font-weight:600;color:#1a6b3a;cursor:pointer;">${sel.meal.emoji} ${sel.meal.name}</div>`
+        : isSurprise
+          ? `<div style="font-size:12px;color:#7c3aed;font-weight:600;">✨ Surprise me!</div>`
+          : `<div onclick="openDayPicker('${day}')" style="font-size:12px;color:#d1d5db;font-style:italic;cursor:pointer;">— tap to pick —</div>`
+      }
+      ${!sel ? `<div style="margin-top:8px;">
+        <button onclick="toggleSurpriseDay('${day}')" style="font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid ${isSurprise?'#7c3aed':'#ddd'};background:${isSurprise?'#7c3aed':'#fff'};color:${isSurprise?'#fff':'#aaa'};cursor:pointer;font-family:Source Sans 3,sans-serif;">
+          ✨ ${isSurprise ? 'Surprise on!' : 'Surprise me'}
+        </button>
+      </div>` : ''}
+      ${isActive ? `<div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #1a6b3a;"></div>` : ''}
+    </div>`;
+  }).join('');
+  updateSelectedSummary();
+}
+
+function renderMealLibrary() {
+  let filtered = currentSearchTerm
+    ? MEAL_LIBRARY.filter(m => m.name.toLowerCase().includes(currentSearchTerm) || m.cat.includes(currentSearchTerm))
+    : currentFilter === 'all' ? MEAL_LIBRARY : MEAL_LIBRARY.filter(m => m.cat.includes(currentFilter));
+  const count = filtered.length;
+  const countEl = $('mealResultCount');
+  if (countEl) countEl.textContent = currentSearchTerm ? `${count} result${count!==1?'s':''} for "${currentSearchTerm}"` : `${count} meals`;
+  $('mealLibrary').innerHTML = filtered.map(meal => {
+    const existingDay = selectedMeals.find(s => s.meal.name === meal.name);
+    const isSelected = activePickerDay && selectedMeals.find(s => s.day === activePickerDay && s.meal.name === meal.name);
+    const name = currentSearchTerm ? meal.name.replace(new RegExp(`(${currentSearchTerm})`,'gi'),'<mark style="background:#fef08a;border-radius:2px;">$1</mark>') : meal.name;
+    return `<button onclick="selectMeal('${meal.name.replace(/'/g,"\\'")}') " style="background:${isSelected?'#f0faf4':'#fff'};border:2px solid ${isSelected?'#1a6b3a':'var(--border)'};border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s;position:relative;">
+      <div style="font-size:22px;margin-bottom:4px;">${meal.emoji}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.3;">${name}</div>
+      ${existingDay&&!isSelected?`<div style="font-size:9px;color:#f59e0b;margin-top:2px;">★ ${existingDay.day.slice(0,3)}</div>`:''}
+      ${isSelected?'<div style="position:absolute;top:4px;right:4px;width:14px;height:14px;background:#1a6b3a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;">✓</div>':''}
+    </button>`;
+  }).join('');
+}
+
+function filterMeals(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('#mealCatBtns .pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMealLibrary();
+}
+
+function selectMeal(mealName) {
+  if (!activePickerDay) return;
+  const meal = MEAL_LIBRARY.find(m => m.name === mealName);
+  if (!meal) return;
+  const wasSelected = selectedMeals.find(s => s.day === activePickerDay && s.meal.name === mealName);
+  selectedMeals = selectedMeals.filter(s => s.day !== activePickerDay);
+  if (!wasSelected) { selectedMeals.push({ meal, day: activePickerDay }); closeMealPicker(); }
+  else { renderDaySlots(); }
+}
+
+function clearDayMeal(day) {
+  selectedMeals = selectedMeals.filter(s => s.day !== day);
+  renderDaySlots();
+  renderMealLibrary();
+  updateSelectedSummary();
+}
+
+function updateSelectedSummary() {
+  const summary = $('selectedSummary');
+  const list = $('selectedList');
+  if (selectedMeals.length === 0) {
+    summary.style.display = 'none';
+    return;
+  }
+  summary.style.display = 'block';
+  list.innerHTML = selectedMeals.map(s =>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:13px">${s.meal.emoji} ${s.meal.name}</span>
+      <span style="font-size:12px;color:var(--text-light);font-weight:600">${s.day || '🎲 Random day'}</span>
+    </div>`
+  ).join('');
+}
+
+async function genChosenMeals() {
+  const budget = num('dBudget');
+  if (budget < 20) { showErr('dErrB','Please enter a budget of at least $20.'); return; }
+  const days = DAYS_OF_WEEK.slice(0, dd);
+  const activeDays = [...new Set([...selectedMeals.map(s => s.day), ...Array.from(surpriseDays)])].sort((a,b) => DAYS_OF_WEEK.indexOf(a) - DAYS_OF_WEEK.indexOf(b));
+  if (selectedMeals.length === 0 && surpriseDays.size === 0) { showErr('dErrB','Please select at least one meal or tap ✨ Surprise me on a day.'); return; }
+  hideErr('dErrB');
+
+  const diet = Array.from(document.querySelectorAll('#dDietContainer .pill-btn.active')).map(b => b.textContent);
+  const sortedChosen = [...selectedMeals].sort((a,b) => DAYS_OF_WEEK.indexOf(a.day) - DAYS_OF_WEEK.indexOf(b.day));
+  const chosenList = sortedChosen.map(s => `${s.day}: ${s.meal.name} ${s.meal.emoji}`).join(', ');
+  const surpriseList = surpriseDays.size > 0 ? `Pick suitable random meals for these days: ${[...surpriseDays].join(', ')}` : '';
+
+  hide('d-setup'); show('d-loading');window.scrollTo({top:0,behavior:'instant'});
+  $('dLoadTxt').textContent = `Costing up your chosen meals for ${dp} people...`;
+
+  try {
+    dPlan = await callAI(`You are an Australian grocery budgeting assistant.
+Cost up this dinner plan for ${dp} people with total budget AUD $${budget}.
+ONLY generate meals for these days: ${activeDays.join(', ')}. Do NOT add any other days.
+${chosenList ? `CHOSEN MEALS (include exactly as given): ${chosenList}` : ''}
+${surpriseList}
+${diet.length ? 'Dietary requirements: ' + diet.join(', ') : ''}
+PORTION SIZES: Scale all ingredients to feed exactly ${dp} people — approximately 180-200g raw protein per person, 75-80g dry pasta or rice per person.
+MEAT & PROTEIN PACKAGING: Use realistic Australian supermarket pack sizes and price per kg — do NOT use fixed arbitrary weights like 800g. Use these real formats:
+- Beef mince: 500g or 1kg packs (Woolworths/Coles ~$10-12/kg, ALDI ~$8-9/kg)
+- Lamb forequarter chops: variable ~1kg tray, price per kg (~$16/kg Woolworths/Coles, ~$13/kg ALDI)
+- Lamb loin chops: variable ~500g-800g tray, ~$29/kg Woolworths/Coles, ~$22/kg ALDI
+- Lamb mince: 500g pack (~$12-14 Woolworths/Coles, ~$10 ALDI)
+- Chicken breast: 500g or 1kg pack (~$10-12/kg Woolworths/Coles, ~$8/kg ALDI)
+- Chicken thighs: 1kg pack (~$8-10/kg Woolworths/Coles, ~$6-7/kg ALDI)
+- Pork chops: variable ~500g-800g tray
+- Sausages: 6-pack ~500g
+- Bacon: 175g-200g pack
+- Fish fillets: 400g-500g pack
+Use current Australian supermarket prices reflecting March 2026 real-world data:
+VERIFIED ALDI PRICES (March 2026): Full cream milk 2L $3.19, Chicken mixed pieces 2kg $8.49, Middle bacon 1kg $10.49, Flour plain 1kg $1.25, Spaghetti 500g $0.89, Margarine spread 500g $2.99, Mushrooms 500g $6.29, Strawberries 500g $6.49, Raspberries 125g $3.99, Brown onion 1kg $1.79, Apple Gala 1kg $5.99, Baby broccoli bunch $1.99, Sweet potato $2.99/kg, Hot dog frankfurts 500g $2.79.
+INFLATION ADJUSTMENTS: Beef and lamb 10-11% higher, coffee 13.5% higher, dairy up ~4%, fresh berries and stone fruit up ~35%, fresh vegetables up ~22-25%, pantry staples (pasta, flour, rice) remain low at ALDI.
+STORE PRICE RULES: ALDI is significantly cheaper on pantry staples (pasta, flour, rice, spreads, canned goods) — often 30-40% less than Woolworths/Coles. However on fresh produce and berries ALDI prices are similar to or only slightly cheaper than Woolworths/Coles. Woolworths/Coles within 5-15% of each other on most items. 5-8 ingredients per meal.
+Results MUST be ordered: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.
+Respond ONLY with valid JSON no markdown:
+{"meals":[{"day":"Monday","name":"Spaghetti Bolognese","emoji":"🍝","serves":${dp},"cookTime":35,"ingredients":[{"name":"Beef mince 500g","woolworths":8.50,"coles":8.00,"aldi":6.50,"qty":"500g"}],"totalWoolworths":24.50,"totalColes":23.80,"totalALDI":19.20,"cheapestStore":"ALDI"}],"grandTotalWoolworths":145.20,"grandTotalColes":141.80,"grandTotalALDI":118.40,"cheapestStoreOverall":"ALDI","budgetNote":"Fits within $${budget} budget"}`);
+
+    dPlan.meals.sort((a,b) => DAYS_OF_WEEK.indexOf(a.day) - DAYS_OF_WEEK.indexOf(b.day));
+    dPlan._mode = 'choose';
+    lastChooseResults = JSON.parse(JSON.stringify(dPlan));
+    currentMode = 'choose';
+    dEx = 0; dAS = null;
+    hide('d-loading'); show('d-results');
+    $('dBNote').textContent = dPlan.budgetNote || '';
+    updateBudgetBanner(budget,dPlan.meals.length,dp);
+    renderStores(dPlan, 'dSGrid', dAS, 'selDStore');
+    renderMealList(dPlan, 'dMealList', dAS, dEx, 'togD');
+    renderGrand(dPlan, 'dGrand', 'Your chosen meals', `${dPlan.meals.length} dinners · ${dp} people`);
+    updateResultButtons('choose');
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch(e) {
+    hide('d-loading'); show('d-setup');
+    showErr('dErrB', 'Something went wrong. Please try again.');
+  }
+}
+let voiceRecognition = null;
+let voiceActive = false;
+
+function startVoice(section) {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast('🎤 Voice works when the app is live on the web — coming soon!');
+    return;
+  }
+  if (voiceActive) return;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  voiceRecognition = new SpeechRecognition();
+  voiceRecognition.lang = 'en-AU';
+  voiceRecognition.interimResults = false;
+  voiceRecognition.maxAlternatives = 1;
+
+  const iconId = section === 'dinner' ? 'dVoiceIcon' : 'shopVoiceIcon';
+  const statusId = section === 'dinner' ? 'dVoiceStatus' : 'shopVoiceStatus';
+  const btnId = section === 'dinner' ? 'dVoiceBtn' : 'shopVoiceBtn';
+  const icon = $(iconId);
+  const status = $(statusId);
+  const btn = $(btnId);
+
+  if (!icon || !status) { voiceActive = false; showToast('Voice not available here.'); return; }
+
+  icon.classList.add('listening');
+  icon.textContent = '🔴';
+  status.classList.add('show');
+  status.textContent = 'Listening...';
+  voiceActive = true;
+
+  voiceRecognition.onresult = async (event) => {
+    const transcript = event.results[0][0].transcript;
+    status.textContent = 'Got it! Filling in...';
+    icon.textContent = '⏳';
+
+    // Send transcript to AI to parse into structured fields
+    try {
+      const parsePrompt = section === 'dinner'
+        ? `Extract dinner planning details from this voice input: "${transcript}"
+Return ONLY valid JSON with these fields (use null if not mentioned):
+{
+  "budget": number or null,
+  "people": number or null,
+  "days": number or null (only 5, 6 or 7),
+  "dietary": array of strings from: ["Vegetarian","Gluten-free","Halal","Dairy-free","No seafood"] or []
+}`
+        : `Extract kids meal planning details from this voice input: "${transcript}"
+Return ONLY valid JSON with these fields (use null if not mentioned):
+{
+  "budget": number or null,
+  "kids": number or null,
+  "days": number or null (only 5 or 7),
+  "meals": array of strings from: ["breakfast","lunch","snack"] or [],
+  "dietary": array of strings from: ["Nut-free","Vegetarian","Gluten-free","Dairy-free"] or []
+}`;
+
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 300,
+          messages: [{ role: 'user', content: parsePrompt }]
+        })
+      });
+      const d = await r.json();
+      const txt = d.content.map(i => i.text || '').join('');
+      const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
+
+      if (section === 'dinner') {
+        applyDinnerVoice(parsed);
+      } else {
+        applyShopVoice(parsed);
+      }
+
+      status.textContent = '✅ Done!';
+      icon.textContent = '✅';
+      icon.classList.remove('listening');
+      setTimeout(() => {
+        status.classList.remove('show');
+        icon.textContent = '🎤';
+        voiceActive = false;
+      }, 2000);
+
+    } catch(e) {
+      status.textContent = 'Try again';
+      icon.textContent = '🎤';
+      icon.classList.remove('listening');
+      setTimeout(() => { status.classList.remove('show'); voiceActive = false; }, 2000);
+    }
+  };
+
+  voiceRecognition.onerror = () => {
+    icon.textContent = '🎤';
+    icon.classList.remove('listening');
+    status.textContent = 'Could not hear — try again';
+    setTimeout(() => { status.classList.remove('show'); voiceActive = false; }, 2000);
+  };
+
+  voiceRecognition.onend = () => {
+    if (voiceActive && icon.textContent === '🔴') {
+      icon.textContent = '🎤';
+      icon.classList.remove('listening');
+      status.classList.remove('show');
+      voiceActive = false;
+    }
+  };
+
+  voiceRecognition.start();
+}
+
+function applyDinnerVoice(parsed) {
+  if (parsed.budget) {
+    $('dBudget').value = parsed.budget;
+  }
+  if (parsed.people) {
+    dp = Math.max(1, Math.min(12, parsed.people));
+    $('dPeopleVal').textContent = dp;
+  }
+  if (parsed.days) {
+    dSetDays([5,6,7].includes(parsed.days) ? parsed.days : 7);
+  }
+  if (parsed.dietary && parsed.dietary.length > 0) {
+    document.querySelectorAll('#dDietContainer .pill-btn').forEach(btn => {
+      if (parsed.dietary.includes(btn.textContent.trim())) {
+        btn.classList.add('active');
+      }
+    });
+  }
+  dHint();
+  document.querySelector('.card').style.transition = 'box-shadow 0.3s';
+  document.querySelector('.card').style.boxShadow = '0 0 0 3px #1a6b3a44';
+  setTimeout(() => { document.querySelector('.card').style.boxShadow = ''; }, 1500);
+}
+
+function applyShopVoice(parsed) {
+  // Apply shopping items from voice to the text input
+  if (parsed.items && parsed.items.length > 0) {
+    const existing = ($('shopTextInput').value || '').trim();
+    const newItems = parsed.items.join(', ');
+    $('shopTextInput').value = existing ? existing + ', ' + newItems : newItems;
+    showToast('🛒 Added ' + parsed.items.length + ' item' + (parsed.items.length > 1 ? 's' : '') + ' to your list!');
+  }
+}
+
+
+
+</script>
+
+<!-- DISCLAIMER FOOTER -->
+<footer style="background:#f7f8fa;border-top:1px solid #e2e5ea;margin-top:22px;padding:24px 20px;">
+  <div style="max-width:880px;margin:0 auto;">
+
+    <!-- Compact top row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:16px">⚠️</span>
+        <span style="font-size:12px;color:#7a5800;font-weight:600;">Prices reflect current Australian inflation trends including recent rises in beef, lamb and coffee. For guidance only — always verify in-store before purchasing.</span>
+      </div>
+      <div style="background:#1a6b3a;color:#fff;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;white-space:nowrap;">🗓️ Prices reflect current inflation — March 2026</div>
+    </div>
+
+    <!-- Compact disclaimer pills -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:8px 12px;font-size:11px;color:#6b7280;flex:1;min-width:220px;">
+        <strong style="color:#374151;">📊 Prices</strong> — Reflect current Australian inflation trends. Beef & lamb up ~11%, coffee up ~13.5%, dairy up ~4%, general food inflation ~3.1%. Vary by location, date & promotions.
+      </div>
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:8px 12px;font-size:11px;color:#6b7280;flex:1;min-width:220px;">
+        <strong style="color:#374151;">🏪 Independent</strong> — Not affiliated with Woolworths®, Coles® or ALDI®. Trademarks belong to their owners.
+      </div>
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:8px 12px;font-size:11px;color:#6b7280;flex:1;min-width:220px;">
+        <strong style="color:#374151;">🍽️ Meal Plans</strong> — For budgeting guidance only. No warranty on accuracy or suitability.
+      </div>
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:8px 12px;font-size:11px;color:#6b7280;flex:1;min-width:220px;">
+        <strong style="color:#374151;">🥗 Dietary</strong> — Not medical advice. Consult a health professional for dietary or allergy needs.
+      </div>
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:8px 12px;font-size:11px;color:#6b7280;flex:1;min-width:220px;">
+        <strong style="color:#374151;">⚖️ Liability</strong> — To the max extent permitted by Australian law, Okiyo accepts no liability for losses from use of this app.
+      </div>
+      <div style="background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:8px 12px;font-size:11px;color:#6b7280;flex:1;min-width:220px;">
+        <strong style="color:#374151;">🔒 Privacy</strong> — No personal data collected, stored or shared. Your details stay on your device only.
+      </div>
+    </div>
+
+    <!-- Bottom line -->
+    <div style="text-align:center;padding-top:12px;border-top:1px solid #e2e5ea;">
+      <div style="font-size:11px;color:#9ca3af;">
+        🌿 <strong style="color:#6b7280">Okiyo</strong> — Smarter Shopping for Australian Families &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; Not financial, medical or dietary advice
+      </div>
+    </div>
+
+  </div>
+</footer>
+</body>
+</html>
