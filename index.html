@@ -1258,7 +1258,30 @@ function applySmartVoice(){
   }
 
   closeSmartVoiceModal();
-  showToast('✅ Okiyo applied everything!');
+  showToast('✅ Okiyo is on it!');
+
+  // ── Auto-generate results based on what was detected
+  const hasDinner = ds&&(ds.budget||ds.days);
+  const hasKids = ks&&(ks.budget||ks.kids||ks.days);
+  const hasShop = parsed.shoppingItems&&parsed.shoppingItems.length>0;
+
+  if(hasDinner&&hasKids){
+    // Both dinner and kids — run dinner first, kids runs in background
+    switchTab('dinner');
+    setTimeout(()=>{
+      genDinner();
+      setTimeout(()=>genKids(), 2000); // slight delay so dinner gets focus first
+    }, 300);
+  } else if(hasDinner){
+    switchTab('dinner');
+    setTimeout(()=>genDinner(), 300);
+  } else if(hasKids){
+    switchTab('kids');
+    setTimeout(()=>genKids(), 300);
+  } else if(hasShop){
+    switchTab('shop');
+    setTimeout(()=>genShoppingList(), 300);
+  }
 }
 
 function closeSmartVoiceModal(e){if(!e||e.target===$('smartVoiceModal')){$('smartVoiceModal').style.display='none';smartVoiceResult=null;}}
