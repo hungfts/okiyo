@@ -858,15 +858,65 @@ function showToast(msg){
   clearTimeout(toast._t);toast._t=setTimeout(()=>{toast.style.opacity='0';},3000);
 }
 
-function buildShareText(section){
+function buildShareText(section, forEmail=false){
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  let text=`🌿 OKIYO — Smarter Shopping for Australian Families\n📅 ${today}\n${'─'.repeat(40)}\n\n`;
+  let text = forEmail
+    ? `OKIYO - Smarter Shopping for Australian Families\n${today}\n${'─'.repeat(40)}\n\n`
+    : `🌿 OKIYO — Smarter Shopping for Australian Families\n📅 ${today}\n${'─'.repeat(40)}\n\n`;
   if(section==='dinner'&&dPlan){
-    text+=`🍽️ FAMILY DINNER PLAN\n${dPlan.meals.length} dinners · ${dp} people\n\n`;
-    dPlan.meals.forEach(meal=>{text+=`${meal.day.toUpperCase()}: ${meal.emoji} ${meal.name}\n  🟢 $${n2(meal.totalWoolworths).toFixed(2)} 🔴 $${n2(meal.totalColes).toFixed(2)} 🔵 $${n2(meal.totalALDI).toFixed(2)}\n\n`;});
-    text+=`TOTAL: W $${n2(dPlan.grandTotalWoolworths).toFixed(2)} · C $${n2(dPlan.grandTotalColes).toFixed(2)} · A $${n2(dPlan.grandTotalALDI).toFixed(2)}\n`;
+    text += forEmail
+      ? `FAMILY DINNER PLAN\n${dPlan.meals.length} dinners - ${dp} people\n\n`
+      : `🍽️ FAMILY DINNER PLAN\n${dPlan.meals.length} dinners · ${dp} people\n\n`;
+    dPlan.meals.forEach(meal=>{
+      text += forEmail
+        ? `${meal.day.toUpperCase()}: ${meal.name}\n  W $${n2(meal.totalWoolworths).toFixed(2)}  C $${n2(meal.totalColes).toFixed(2)}  A $${n2(meal.totalALDI).toFixed(2)}\n`
+        : `${meal.day.toUpperCase()}: ${meal.emoji} ${meal.name}\n  🟢 $${n2(meal.totalWoolworths).toFixed(2)} 🔴 $${n2(meal.totalColes).toFixed(2)} 🔵 $${n2(meal.totalALDI).toFixed(2)}\n`;
+      // Add ingredients
+      if(meal.ingredients&&meal.ingredients.length){
+        text += forEmail ? `  Ingredients:\n` : `  Ingredients:\n`;
+        meal.ingredients.forEach(ing=>{
+          const cheapest = cheapS(ing);
+          const price = iP(ing, cheapest);
+          text += `    - ${ing.name} ${ing.qty?'('+ing.qty+')':''} — $${price.toFixed(2)} at ${cheapest}\n`;
+        });
+      }
+      text += '\n';
+    });
+    text+=`TOTAL: W $${n2(dPlan.grandTotalWoolworths).toFixed(2)} - C $${n2(dPlan.grandTotalColes).toFixed(2)} - A $${n2(dPlan.grandTotalALDI).toFixed(2)}\n`;
   }
-  text+=`\n🌿 Okiyo — Smarter Shopping for Australian Families`;
+  if(section==='kids'&&kPlan){
+    text += forEmail ? `KIDS SCHOOL LUNCH\n${kd} days - ${kk} kids\n\n` : `🎒 KIDS SCHOOL LUNCH\n${kd} days · ${kk} kids\n\n`;
+    kPlan.meals.forEach(meal=>{
+      text += forEmail
+        ? `${meal.day.toUpperCase()}: ${meal.name}\n  W $${n2(meal.totalWoolworths).toFixed(2)}  C $${n2(meal.totalColes).toFixed(2)}  A $${n2(meal.totalALDI).toFixed(2)}\n`
+        : `${meal.day.toUpperCase()}: ${meal.emoji} ${meal.name}\n  🟢 $${n2(meal.totalWoolworths).toFixed(2)} 🔴 $${n2(meal.totalColes).toFixed(2)} 🔵 $${n2(meal.totalALDI).toFixed(2)}\n`;
+      if(meal.ingredients&&meal.ingredients.length){
+        meal.ingredients.forEach(ing=>{
+          const cheapest = cheapS(ing);
+          const price = iP(ing, cheapest);
+          text += `    - ${ing.name} ${ing.qty?'('+ing.qty+')':''} — $${price.toFixed(2)} at ${cheapest}\n`;
+        });
+      }
+      text += '\n';
+    });
+    text+=`TOTAL: W $${n2(kPlan.grandTotalWoolworths).toFixed(2)} - C $${n2(kPlan.grandTotalColes).toFixed(2)} - A $${n2(kPlan.grandTotalALDI).toFixed(2)}\n`;
+  }
+  if(section==='shop'&&shopPlan){
+    text += forEmail ? `SHOPPING LIST\n\n` : `🛒 SHOPPING LIST\n\n`;
+    shopPlan.meals.forEach(meal=>{
+      if(meal.ingredients&&meal.ingredients.length){
+        meal.ingredients.forEach(ing=>{
+          const cheapest = cheapS(ing);
+          const price = iP(ing, cheapest);
+          text += `  - ${ing.name} ${ing.qty?'('+ing.qty+')':''} — $${price.toFixed(2)} at ${cheapest}\n`;
+        });
+      }
+    });
+    text += `\nTOTAL: W $${n2(shopPlan.grandTotalWoolworths).toFixed(2)} - C $${n2(shopPlan.grandTotalColes).toFixed(2)} - A $${n2(shopPlan.grandTotalALDI).toFixed(2)}\n`;
+  }
+  text += forEmail
+    ? `\nOkiyo - Smarter Shopping for Australian Families\nokiyo.vercel.app`
+    : `\n🌿 Okiyo — Smarter Shopping for Australian Families\nokiyo.vercel.app`;
   return text;
 }
 
@@ -1054,7 +1104,7 @@ async function doShare(method){
   if(method==='native'){if(navigator.share){try{await navigator.share({title,text});}catch(e){try{await navigator.clipboard.writeText(text);showToast('📋 Copied!');}catch(e2){}}}else{try{await navigator.clipboard.writeText(text);showToast('📋 Copied — paste anywhere!');}catch(e){}}}
   else if(method==='clipboard'){try{await navigator.clipboard.writeText(text);showToast('📋 Copied! Paste into Notes or WhatsApp.');}catch(e){showToast('Could not copy — try another option.');}}
   else if(method==='pdf'){const win=window.open('','_blank');if(win){win.document.write(`<!DOCTYPE html><html><head><title>${title}</title></head><body><pre style="font-family:Arial;font-size:13px;line-height:1.6;">${text.replace(/</g,'&lt;')}</pre></body></html>`);win.onload=()=>win.print();showToast('📄 Opening print dialog — choose Save as PDF');}}
-  else if(method==='email'){window.location.href=`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text)}`;showToast('📧 Opening email...');}
+  else if(method==='email'){window.location.href=`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(buildShareText(currentShareSection,true))}`;showToast('📧 Opening email...');}
 }
 
 // ── Global smart voice
@@ -1437,7 +1487,7 @@ function cheapS(ing){return ST.slice().sort((a,b)=>iP(ing,a)-iP(ing,b))[0];}
 function savings(plan){const t=ST.map(s=>gT(plan,s));return Math.max(...t)-Math.min(...t);}
 
 async function callAI(prompt){
-  const r=await fetch('/api/generate',{
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
