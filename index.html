@@ -1320,19 +1320,12 @@ async function genKids(){
   hide('k-setup');show('k-loading');window.scrollTo({top:0,behavior:'instant'});
   $('kLoadTxt').textContent=`Finding ${kTypes.join(' & ')} for ${kk} kid${kk>1?'s':''} over ${kd} day${kd>1?'s':''}`;
   try{
-    kPlan=await callAI(`You are an Australian grocery budgeting assistant planning school lunch boxes.
-Plan ${kTypes.join(' and ')} for ${kk} child${kk>1?'ren':''} for ${kd} school day${kd>1?'s':''}.
-STRICT BUDGET RULES:
-- Total budget for ALL days combined: AUD $${budget} — do NOT exceed this
-- Maximum spend per day across all stores: AUD $${perDayBudget}
-- That is $${perDayPerKid} per child per day — choose items accordingly
-- The grandTotal values MUST be under $${budget}
-${diet.length?'Dietary requirements: '+diet.join(', '):'No dietary restrictions'}
-PORTIONS: Scale for ${kk} child${kk>1?'ren':''} aged 5-12. Keep items practical and budget-friendly — store brand options, bulk buys where possible.
-Use current Australian supermarket prices reflecting March 2026 real-world data. ALDI is significantly cheaper on pantry staples like bread, spreads and packaged snacks (30-40% less). Fresh fruit prices are high — strawberries $6.49/500g, apples $5.99/kg, raspberries $3.99/125g. Keep lunchbox items practical and budget-friendly using store brand options.
-Generate one entry per day with different items each day — no repeats across the week.
-Respond ONLY with valid JSON no markdown:
-{"meals":[{"day":"Monday","name":"Monday Lunch Box","emoji":"🥪","serves":${kk},"cookTime":10,"ingredients":[{"name":"Wholemeal bread loaf","woolworths":3.50,"coles":3.20,"aldi":2.59,"qty":"1 loaf"},{"name":"Shaved ham 200g","woolworths":4.50,"coles":4.20,"aldi":3.49,"qty":"200g"}],"totalWoolworths":${exDayWool},"totalColes":${exDayColes},"totalALDI":${exDayAldi},"cheapestStore":"ALDI"}],"grandTotalWoolworths":${exWool},"grandTotalColes":${exColes},"grandTotalALDI":${exAldi},"cheapestStoreOverall":"ALDI","budgetNote":"${kd} days of ${kTypes.join(' & ')} for ${kk} kid${kk>1?'s':''} — fits within $${budget} budget"}`);
+    kPlan=await callAI(`Australian school lunchbox planner. Plan ${kTypes.join(' and ')} for ${kk} kid${kk>1?'s':''} for ${kd} day${kd>1?'s':''}.
+Budget: AUD $${budget} total. Max $${perDayBudget}/day. $${perDayPerKid}/kid/day.
+${diet.length?'Dietary: '+diet.join(', '):'No dietary restrictions'}
+Use March 2026 Australian prices. ALDI cheapest on packaged items. Keep practical — bread, spreads, fruit, snacks. Max 4 ingredients per day. Different items each day.
+Respond ONLY valid JSON:
+{"meals":[{"day":"Monday","name":"Monday Lunch Box","emoji":"🥪","serves":${kk},"cookTime":5,"ingredients":[{"name":"Bread loaf","woolworths":3.50,"coles":3.20,"aldi":2.59,"qty":"1 loaf"},{"name":"Shaved ham 200g","woolworths":4.50,"coles":4.20,"aldi":3.49,"qty":"200g"}],"totalWoolworths":${exDayWool},"totalColes":${exDayColes},"totalALDI":${exDayAldi},"cheapestStore":"ALDI"}],"grandTotalWoolworths":${exWool},"grandTotalColes":${exColes},"grandTotalALDI":${exAldi},"cheapestStoreOverall":"ALDI","budgetNote":"${kd} days for ${kk} kid${kk>1?'s':''}"}`);
     kAS=null;
     hide('k-loading');show('k-results');
     updateKidsBanner(budget,kd,kk,kTypes.map(t=>t.charAt(0).toUpperCase()+t.slice(1)).join(' & '));
@@ -1490,7 +1483,7 @@ async function callAI(prompt){
   const r=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:6000,messages:[{role:'user',content:prompt}]})
   });
   const d=await r.json();
   if(d.error)throw new Error(d.error.message||'API error');
