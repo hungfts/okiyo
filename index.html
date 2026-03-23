@@ -180,6 +180,13 @@
             <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">No personal data is collected, stored or shared. Your details stay on your device only.</div>
           </div>
         </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="font-size:18px;flex-shrink:0;">🤖</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e5e7eb;margin-bottom:2px;">Powered by AI</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Okiyo uses Claude AI by Anthropic to generate meal plans and shopping lists. Your requests are processed by Anthropic's servers. No personal information is included in these requests. By continuing you consent to this.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -869,15 +876,12 @@ function buildShareText(section, forEmail=false){
       : `🍽️ FAMILY DINNER PLAN\n${dPlan.meals.length} dinners · ${dp} people\n\n`;
     dPlan.meals.forEach(meal=>{
       text += forEmail
-        ? `${meal.day.toUpperCase()}: ${meal.name}\n  W $${n2(meal.totalWoolworths).toFixed(2)}  C $${n2(meal.totalColes).toFixed(2)}  A $${n2(meal.totalALDI).toFixed(2)}\n`
-        : `${meal.day.toUpperCase()}: ${meal.emoji} ${meal.name}\n  🟢 $${n2(meal.totalWoolworths).toFixed(2)} 🔴 $${n2(meal.totalColes).toFixed(2)} 🔵 $${n2(meal.totalALDI).toFixed(2)}\n`;
-      // Add ingredients
+        ? `\n▸ ${meal.day.toUpperCase()}: ${meal.name}\n  W $${n2(meal.totalWoolworths).toFixed(2)}  C $${n2(meal.totalColes).toFixed(2)}  A $${n2(meal.totalALDI).toFixed(2)}\n`
+        : `\n★ ${meal.day.toUpperCase()}: ${meal.emoji} ${meal.name}\n  🟢 $${n2(meal.totalWoolworths).toFixed(2)} 🔴 $${n2(meal.totalColes).toFixed(2)} 🔵 $${n2(meal.totalALDI).toFixed(2)}\n`;
+      // Add ingredients — no prices, just name and qty
       if(meal.ingredients&&meal.ingredients.length){
-        text += forEmail ? `  Ingredients:\n` : `  Ingredients:\n`;
         meal.ingredients.forEach(ing=>{
-          const cheapest = cheapS(ing);
-          const price = iP(ing, cheapest);
-          text += `    - ${ing.name} ${ing.qty?'('+ing.qty+')':''} — $${price.toFixed(2)} at ${cheapest}\n`;
+          text += `    • ${ing.name}${ing.qty?' ('+ing.qty+')':''}\n`;
         });
       }
       text += '\n';
@@ -892,9 +896,7 @@ function buildShareText(section, forEmail=false){
         : `${meal.day.toUpperCase()}: ${meal.emoji} ${meal.name}\n  🟢 $${n2(meal.totalWoolworths).toFixed(2)} 🔴 $${n2(meal.totalColes).toFixed(2)} 🔵 $${n2(meal.totalALDI).toFixed(2)}\n`;
       if(meal.ingredients&&meal.ingredients.length){
         meal.ingredients.forEach(ing=>{
-          const cheapest = cheapS(ing);
-          const price = iP(ing, cheapest);
-          text += `    - ${ing.name} ${ing.qty?'('+ing.qty+')':''} — $${price.toFixed(2)} at ${cheapest}\n`;
+          text += `    • ${ing.name}${ing.qty?' ('+ing.qty+')':''}\n`;
         });
       }
       text += '\n';
