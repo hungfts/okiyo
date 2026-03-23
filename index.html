@@ -1514,7 +1514,12 @@ async function callAI(prompt){
   if(d.error)throw new Error(d.error.message||'API error');
   if(!d.content)throw new Error('No response');
   const txt=d.content.map(i=>i.text||'').join('');
-  return JSON.parse(txt.replace(/```json|```/g,'').trim());
+  // Strip markdown fences
+  let clean=txt.replace(/```json|```/g,'').trim();
+  // Extract just the JSON object/array in case Claude adds any preamble text
+  const jsonMatch=clean.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+  if(jsonMatch)clean=jsonMatch[0];
+  return JSON.parse(clean);
 }
 
 function renderStores(plan,gridId,activeStore,clickFn){
@@ -1859,7 +1864,7 @@ function setMode(mode) {
 }
 
 function renderDaySlots() {
-  const days = DAYS_OF_WEEK.slice(0, dd);
+  const days = DAYS_OF_WEEK; // FIXED: always show all 7 days in I'll Choose mode
   const weekDates = getWeekDates();
   $('daySlots').innerHTML = days.map((day, i) => {
     const sel = selectedMeals.find(m => m.day === day);
@@ -1967,7 +1972,6 @@ function updateSelectedSummary() {
 async function genChosenMeals() {
   const budget = num('dBudget');
   if (budget < 20) { showErr('dErrB','Please enter a budget of at least $20.'); return; }
-  const days = DAYS_OF_WEEK.slice(0, dd);
   const activeDays = [...new Set([...selectedMeals.map(s => s.day), ...Array.from(surpriseDays)])].sort((a,b) => DAYS_OF_WEEK.indexOf(a) - DAYS_OF_WEEK.indexOf(b));
   if (selectedMeals.length === 0 && surpriseDays.size === 0) { showErr('dErrB','Please select at least one meal or tap ✨ Surprise me on a day.'); return; }
   hideErr('dErrB');
