@@ -1752,19 +1752,19 @@ MEALS TO COST (do not change these, use exactly as given): ${mealAssignments}
 ${diet.length?'Dietary requirements: '+diet.join(', '):''}
 PORTION SIZES: Scale all ingredients to feed exactly ${dp} people using standard Australian adult serving sizes — approximately 180-200g raw protein per person, 75-80g dry pasta or rice per person, vegetables scaled accordingly. Do not under or over cater.
 MEAT & PROTEIN PACKAGING: Use realistic Australian supermarket pack sizes and price per kg — do NOT use fixed arbitrary weights like 800g. Use these real formats:
-- Beef mince: 500g or 1kg packs (Woolworths/Coles ~$10-12/kg, ALDI ~$8-9/kg)
-- Lamb forequarter chops: variable ~1kg tray, price per kg (~$16/kg Woolworths/Coles, ~$13/kg ALDI)
-- Lamb loin chops: variable ~500g-800g tray, ~$29/kg Woolworths/Coles, ~$22/kg ALDI
+- Beef mince: 500g or 1kg packs (Woolworths/Coles ~$14/kg, ALDI ~$11/kg)
+- Lamb forequarter chops: variable ~1kg tray, price per kg (~$20/kg Woolworths/Coles, ~$16/kg ALDI)
+- Lamb loin chops: variable ~500g-800g tray, ~$36/kg Woolworths/Coles, ~$28/kg ALDI
 - Lamb mince: 500g pack (~$12-14 Woolworths/Coles, ~$10 ALDI)
-- Chicken breast: 500g or 1kg pack (~$10-12/kg Woolworths/Coles, ~$8/kg ALDI)
-- Chicken thighs: 1kg pack (~$8-10/kg Woolworths/Coles, ~$6-7/kg ALDI)
+- Chicken breast: 500g or 1kg pack (~$13-14/kg Woolworths/Coles, ~$10/kg ALDI)
+- Chicken thighs: 1kg pack (~$11-12/kg Woolworths/Coles, ~$8/kg ALDI)
 - Pork chops: variable ~500g-800g tray
 - Sausages: 6-pack ~500g
 - Bacon: 175g-200g pack
 - Fish fillets: 400g-500g pack
 Use current Australian supermarket prices reflecting March 2026 real-world data:
 VERIFIED ALDI PRICES (March 2026): Full cream milk 2L $3.19, Chicken mixed pieces 2kg $8.49, Middle bacon 1kg $10.49, Flour plain 1kg $1.25, Spaghetti 500g $0.89, Margarine spread 500g $2.99, Mushrooms 500g $6.29, Strawberries 500g $6.49, Raspberries 125g $3.99, Brown onion 1kg $1.79, Apple Gala 1kg $5.99, Baby broccoli bunch $1.99, Sweet potato $2.99/kg, Hot dog frankfurts 500g $2.79.
-INFLATION ADJUSTMENTS: Beef and lamb 10-11% higher, coffee 13.5% higher, dairy up ~4%, fresh berries and stone fruit up ~35%, fresh vegetables up ~22-25%, pantry staples (pasta, flour, rice) remain low at ALDI.
+INFLATION ADJUSTMENTS: Beef mince now ~$14/kg at Woolworths/Coles (up ~20%), lamb up ~25%, chicken up ~15-20%, burger buns ~$4.90 Coles/~$3.59 ALDI, coffee up ~13.5%, dairy up ~4-6%, fresh vegetables up ~22-25%, pantry staples (pasta, flour, rice) remain low at ALDI. Always price on the HIGH side — it is better to overestimate than underestimate.
 STORE PRICE RULES: ALDI is significantly cheaper on pantry staples (pasta, flour, rice, spreads, canned goods) — often 30-40% less than Woolworths/Coles. However on fresh produce and berries ALDI prices are similar to or only slightly cheaper than Woolworths/Coles. Woolworths/Coles within 5-15% of each other on most items. 5-8 realistic ingredients per meal.
 Respond ONLY with valid JSON no markdown:
 {"meals":[{"day":"Monday","name":"Spaghetti Bolognese","emoji":"🍝","serves":${dp},"cookTime":35,"ingredients":[{"name":"Beef mince 500g","woolworths":8.50,"coles":8.00,"aldi":6.50,"qty":"500g"}],"totalWoolworths":24.50,"totalColes":23.80,"totalALDI":19.20,"cheapestStore":"ALDI"}],"grandTotalWoolworths":145.20,"grandTotalColes":141.80,"grandTotalALDI":118.40,"cheapestStoreOverall":"ALDI","budgetNote":"Fits within \$${budget} budget"}`);
@@ -1993,19 +1993,19 @@ ${surpriseList}
 ${diet.length ? 'Dietary requirements: ' + diet.join(', ') : ''}
 PORTION SIZES: Scale all ingredients to feed exactly ${dp} people — approximately 180-200g raw protein per person, 75-80g dry pasta or rice per person.
 MEAT & PROTEIN PACKAGING: Use realistic Australian supermarket pack sizes and price per kg — do NOT use fixed arbitrary weights like 800g. Use these real formats:
-- Beef mince: 500g or 1kg packs (Woolworths/Coles ~$10-12/kg, ALDI ~$8-9/kg)
-- Lamb forequarter chops: variable ~1kg tray, price per kg (~$16/kg Woolworths/Coles, ~$13/kg ALDI)
-- Lamb loin chops: variable ~500g-800g tray, ~$29/kg Woolworths/Coles, ~$22/kg ALDI
+- Beef mince: 500g or 1kg packs (Woolworths/Coles ~$14/kg, ALDI ~$11/kg)
+- Lamb forequarter chops: variable ~1kg tray, price per kg (~$20/kg Woolworths/Coles, ~$16/kg ALDI)
+- Lamb loin chops: variable ~500g-800g tray, ~$36/kg Woolworths/Coles, ~$28/kg ALDI
 - Lamb mince: 500g pack (~$12-14 Woolworths/Coles, ~$10 ALDI)
-- Chicken breast: 500g or 1kg pack (~$10-12/kg Woolworths/Coles, ~$8/kg ALDI)
-- Chicken thighs: 1kg pack (~$8-10/kg Woolworths/Coles, ~$6-7/kg ALDI)
+- Chicken breast: 500g or 1kg pack (~$13-14/kg Woolworths/Coles, ~$10/kg ALDI)
+- Chicken thighs: 1kg pack (~$11-12/kg Woolworths/Coles, ~$8/kg ALDI)
 - Pork chops: variable ~500g-800g tray
 - Sausages: 6-pack ~500g
 - Bacon: 175g-200g pack
 - Fish fillets: 400g-500g pack
 Use current Australian supermarket prices reflecting March 2026 real-world data:
 VERIFIED ALDI PRICES (March 2026): Full cream milk 2L $3.19, Chicken mixed pieces 2kg $8.49, Middle bacon 1kg $10.49, Flour plain 1kg $1.25, Spaghetti 500g $0.89, Margarine spread 500g $2.99, Mushrooms 500g $6.29, Strawberries 500g $6.49, Raspberries 125g $3.99, Brown onion 1kg $1.79, Apple Gala 1kg $5.99, Baby broccoli bunch $1.99, Sweet potato $2.99/kg, Hot dog frankfurts 500g $2.79.
-INFLATION ADJUSTMENTS: Beef and lamb 10-11% higher, coffee 13.5% higher, dairy up ~4%, fresh berries and stone fruit up ~35%, fresh vegetables up ~22-25%, pantry staples (pasta, flour, rice) remain low at ALDI.
+INFLATION ADJUSTMENTS: Beef mince now ~$14/kg at Woolworths/Coles (up ~20%), lamb up ~25%, chicken up ~15-20%, burger buns ~$4.90 Coles/~$3.59 ALDI, coffee up ~13.5%, dairy up ~4-6%, fresh vegetables up ~22-25%, pantry staples (pasta, flour, rice) remain low at ALDI. Always price on the HIGH side — it is better to overestimate than underestimate.
 STORE PRICE RULES: ALDI is significantly cheaper on pantry staples (pasta, flour, rice, spreads, canned goods) — often 30-40% less than Woolworths/Coles. However on fresh produce and berries ALDI prices are similar to or only slightly cheaper than Woolworths/Coles. Woolworths/Coles within 5-15% of each other on most items. 5-8 ingredients per meal.
 Results MUST be ordered: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.
 Respond ONLY with valid JSON no markdown:
@@ -2177,7 +2177,21 @@ function applyShopVoice(parsed) {
 
 
 
+// Generate QR code in footer
+setTimeout(() => {
+  const el = document.getElementById('footerQR');
+  if (el && typeof QRCode !== 'undefined') {
+    new QRCode(el, {
+      text: 'https://okiyo.vercel.app',
+      width: 120, height: 120,
+      colorDark: '#1a6b3a', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+}, 300);
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <!-- DISCLAIMER FOOTER -->
 <footer style="background:#f7f8fa;border-top:1px solid #e2e5ea;margin-top:22px;padding:24px 20px;">
@@ -2215,7 +2229,14 @@ function applyShopVoice(parsed) {
     </div>
 
     <!-- Bottom line -->
-    <div style="text-align:center;padding-top:12px;border-top:1px solid #e2e5ea;">
+    <div style="text-align:center;padding-top:20px;border-top:1px solid #e2e5ea;">
+      <!-- QR Code share section -->
+      <div style="display:inline-block;background:#fff;border:1px solid #e2e5ea;border-radius:16px;padding:20px 28px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <div style="font-size:12px;font-weight:700;color:#1a6b3a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">📱 Share Okiyo</div>
+        <div style="font-size:11px;color:#9ca3af;margin-bottom:12px;">Scan to open on your phone</div>
+        <div id="footerQR" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
+        <div style="font-size:11px;color:#6b7280;font-weight:600;">okiyo.vercel.app</div>
+      </div>
       <div style="font-size:11px;color:#9ca3af;">
         🌿 <strong style="color:#6b7280">Okiyo</strong> — Smarter Shopping for Australian Families &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; Not financial, medical or dietary advice
       </div>
